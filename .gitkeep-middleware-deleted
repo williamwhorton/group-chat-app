@@ -1,0 +1,2 @@
+This file marks that middleware.ts has been intentionally removed.
+The app now handles authentication client-side in the page components.
