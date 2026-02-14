@@ -18,9 +18,19 @@ export default function SettingsPage() {
 
   useEffect(() => {
     const getCurrentUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser()
-      setUser(user)
-      setLoading(false)
+      try {
+        const { data: { user } } = await supabase.auth.getUser()
+        if (!user) {
+          router.push('/auth/login')
+          return
+        }
+        setUser(user)
+      } catch (error) {
+        console.error('Auth error:', error)
+        router.push('/auth/login')
+      } finally {
+        setLoading(false)
+      }
     }
 
     getCurrentUser()

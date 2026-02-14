@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -21,11 +22,28 @@ export default function ChannelsPage() {
   const [channels, setChannels] = useState<Channel[]>([])
   const [loading, setLoading] = useState(true)
   const [showCreateModal, setShowCreateModal] = useState(false)
+  const [user, setUser] = useState<any>(null)
+  const router = useRouter()
   const supabase = createClient()
 
   useEffect(() => {
-    loadChannels()
+    checkAuthAndLoad()
   }, [])
+
+  const checkAuthAndLoad = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) {
+        router.push('/auth/login')
+        return
+      }
+      setUser(user)
+      loadChannels()
+    } catch (error) {
+      console.error('Auth error:', error)
+      router.push('/auth/login')
+    }
+  }
 
   const loadChannels = async () => {
     try {
