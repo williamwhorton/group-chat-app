@@ -60,9 +60,10 @@ export default function ChatPage() {
       await loadMessages()
     }
     init()
-    
+  }, [channelId])
+
+  useEffect(() => {
     const unsubscribe = subscribeToMessages()
-    
     return () => {
       if (unsubscribe) {
         unsubscribe()
@@ -179,47 +180,106 @@ export default function ChatPage() {
   }
 
   const subscribeToMessages = () => {
+    console.log('[v0] Setting up subscription for channel:', channelId)
+    
+    // Set up realtime subscription
     const subscription = supabase
-      .channel(`channel:${channelId}`)
+      .channel(`messages:${channelId}`)
       .on(
         'postgres_changes',
         {
-          event: '*',
+          event: 'INSERT',
           schema: 'public',
           table: 'messages',
           filter: `channel_id=eq.${channelId}`,
         },
         async (payload) => {
-          if (payload.eventType === 'INSERT') {
-            // Fetch the new message
-            const { data: newMessage } = await supabase
-              .from('messages')
-              .select('*')
-              .eq('id', payload.new.id)
+          console.log('[v0] Received INSERT event:', payload)
+          const newMessage = payload.new as Message
+
+          if (newMessage) {
+            // Fetch the profile for the message author
+            const { data: profile } = await supabase
+              .from('profiles')
+              .select('username')
+              .eq('id', newMessage.user_id)
               .single()
 
-            if (newMessage) {
-              // Fetch the profile for the message author
-              const { data: profile } = await supabase
-                .from('profiles')
-                .select('username')
-                .eq('id', newMessage.user_id)
-                .single()
-
-              const messageWithProfile = {
-                ...newMessage,
-                profiles: profile ? { username: profile.username } : undefined
-              }
-
-              setMessages((prev) => [...prev, messageWithProfile])
+            const messageWithProfile: Message = {
+              ...newMessage,
+              profiles: profile ? { username: profile.username } : undefined
             }
+
+            console.log('[v0] Adding message to state:', messageWithProfile)
+            setMessages((prev) => {
+              // Avoid duplicates
+              if (prev.some(m => m.id === messageWithProfile.id)) {
+                console.log('[v0] Message already exists, skipping')
+                return prev
+              }
+              return [...prev, messageWithProfile]
+            })
           }
         }
       )
-      .subscribe()
+      .subscribe((status) => {
+        console.log('[v0] Subscription status changed to:', status)
+      })
+
+    // Fallback: Poll for new messages every 3 seconds as a safety net
+    const pollInterval = setInterval(async () => {
+      console.log('[v0] Polling for messages...')
+      const lastMessage = messages[messages.length - 1]
+      const lastCreatedAt = lastMessage?.created_at || new Date(0).toISOString()
+
+      const { data: newMessages, error } = await supabase
+        .from('messages')
+        .select('*')
+        .eq('channel_id', channelId)
+        .gt('created_at', lastCreatedAt)
+        .order('created_at', { ascending: true })
+
+      if (error) {
+        console.error('[v0] Error polling messages:', error)
+        return
+      }
+
+      if (newMessages && newMessages.length > 0) {
+        console.log('[v0] Polling found new messages:', newMessages)
+
+        // Fetch profiles for new messages
+        const userIds = [...new Set(newMessages.map(msg => msg.user_id))]
+        const { data: profilesData } = await supabase
+          .from('profiles')
+          .select('id, username')
+          .in('id', userIds)
+
+        const profilesMap = new Map(
+          (profilesData || []).map(profile => [profile.id, profile])
+        )
+
+        const messagesWithProfiles = newMessages.map(msg => ({
+          ...msg,
+          profiles: profilesMap.get(msg.user_id)
+            ? { username: profilesMap.get(msg.user_id)!.username }
+            : undefined
+        }))
+
+        setMessages((prev) => {
+          const combined = [...prev, ...messagesWithProfiles]
+          // Remove duplicates based on id
+          const unique = Array.from(
+            new Map(combined.map(m => [m.id, m])).values()
+          )
+          return unique
+        })
+      }
+    }, 3000)
 
     return () => {
+      console.log('[v0] Cleaning up subscription and poll for channel:', channelId)
       supabase.removeChannel(subscription)
+      clearInterval(pollInterval)
     }
   }
 
@@ -227,17 +287,23 @@ export default function ChatPage() {
     e.preventDefault()
     if (!messageInput.trim() || !currentUser) return
 
+    console.log('[v0] Sending message:', messageInput)
     try {
-      const { error } = await supabase.from('messages').insert({
+      const { data, error } = await supabase.from('messages').insert({
         channel_id: channelId,
         user_id: currentUser.id,
         content: messageInput,
-      })
+      }).select()
 
-      if (error) throw error
+      if (error) {
+        console.error('[v0] Error sending message:', error)
+        throw error
+      }
+      
+      console.log('[v0] Message inserted successfully:', data)
       setMessageInput('')
     } catch (error) {
-      console.error('Error sending message:', error)
+      console.error('[v0] Error sending message:', error)
     }
   }
 
