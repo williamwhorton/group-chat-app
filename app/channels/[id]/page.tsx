@@ -77,6 +77,7 @@ export default function ChatPage() {
 
   const loadMessages = async () => {
     try {
+      console.log('[v0] Loading messages for channel:', channelId)
       const { data, error } = await supabase
         .from('messages')
         .select('*, profiles(username)')
@@ -84,6 +85,7 @@ export default function ChatPage() {
         .order('created_at', { ascending: true })
 
       if (error) throw error
+      console.log('[v0] Loaded messages:', data)
       setMessages(data || [])
     } catch (error) {
       console.error('Error loading messages:', error)
@@ -212,6 +214,9 @@ export default function ChatPage() {
                   <div className="flex items-baseline gap-2">
                     <span className="text-sm font-semibold">
                       {message.profiles?.username || 'Unknown user'}
+                    </span>
+                    <span className="text-xs text-muted-foreground">
+                      {message.user_id}
                     </span>
                     <span className="text-xs text-muted-foreground">
                       {new Date(message.created_at).toLocaleTimeString()}
