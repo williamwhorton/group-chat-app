@@ -33,32 +33,34 @@ export default function Page() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-to-b from-background to-muted p-4">
+    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-background via-muted to-secondary/20 p-4">
       <div className="max-w-md space-y-8 text-center">
         <div className="space-y-4">
-          <h1 className="text-4xl font-bold tracking-tight">Treehouse</h1>
-          <p className="text-lg text-muted-foreground">
+          <h1 className="font-display text-5xl font-bold tracking-tight text-balance">
+            Treehouse
+          </h1>
+          <p className="text-lg leading-relaxed text-muted-foreground">
             Create channels and chat in real-time
           </p>
         </div>
 
         <div className="space-y-3">
           <Link href="/auth/sign-up" className="block">
-            <Button size="lg" className="w-full">
+            <Button size="lg" className="w-full shadow-lg shadow-primary/25 transition-all hover:shadow-xl hover:shadow-primary/30">
               Get Started
             </Button>
           </Link>
           <Link href="/auth/login" className="block">
-            <Button size="lg" variant="outline" className="w-full">
+            <Button size="lg" variant="outline" className="w-full border-2 hover:border-primary/50 hover:bg-primary/5">
               Login
             </Button>
           </Link>
         </div>
 
         <div className="space-y-3 pt-8 text-sm text-muted-foreground">
-          <p>✓ Create and join channels</p>
-          <p>✓ Real-time messaging</p>
-          <p>✓ Invite friends to chat</p>
+          <p>{'✓ Create and join channels'}</p>
+          <p>{'✓ Real-time messaging'}</p>
+          <p>{'✓ Invite friends to chat'}</p>
         </div>
       </div>
     </div>
