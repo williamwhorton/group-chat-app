@@ -47,7 +47,7 @@ describe('Navigation', () => {
     render(<Navigation />)
 
     await waitFor(() => {
-      expect(screen.getByText('GroupChat')).toBeInTheDocument()
+      expect(screen.getByText('Treehouse')).toBeInTheDocument()
       expect(
         screen.getByRole('button', { name: /channels/i })
       ).toBeInTheDocument()
@@ -77,7 +77,7 @@ describe('Navigation', () => {
     render(<Navigation />)
 
     await waitFor(() => {
-      expect(screen.getByText('GroupChat')).toBeInTheDocument()
+      expect(screen.getByText('Treehouse')).toBeInTheDocument()
     })
 
     const logoutButtons = screen.getAllByRole('button')
@@ -104,7 +104,7 @@ describe('Navigation', () => {
     render(<Navigation />)
 
     await waitFor(() => {
-      const channelsLink = screen.getByRole('link', { name: /groupchat/i })
+      const channelsLink = screen.getByRole('link', { name: /treehouse/i })
       expect(channelsLink).toHaveAttribute('href', '/channels')
     })
   })

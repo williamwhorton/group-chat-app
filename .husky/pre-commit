@@ -57,5 +57,9 @@ if (( $(echo "$COVERAGE < $THRESHOLD" | bc -l) )); then
   exit 1
 fi
 
+# Run Prettier
+echo "${YELLOW}Running Prettier and fixing formatting...${NC}"
+npm run format:fix
+
 echo "${GREEN}✅ All pre-commit checks passed!${NC}"
 exit 0

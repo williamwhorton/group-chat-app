@@ -36,9 +36,9 @@ export default function Page() {
     <div className="flex min-h-screen items-center justify-center bg-gradient-to-b from-background to-muted p-4">
       <div className="max-w-md space-y-8 text-center">
         <div className="space-y-4">
-          <h1 className="text-4xl font-bold tracking-tight">Group Chat</h1>
+          <h1 className="text-4xl font-bold tracking-tight">Treehouse</h1>
           <p className="text-lg text-muted-foreground">
-            Create channels and chat with your team in real-time
+            Create channels and chat in real-time
           </p>
         </div>
 
