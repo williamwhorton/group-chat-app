@@ -257,7 +257,7 @@ export default function ChatPage() {
       <Navigation />
       {/* Header */}
       <div className="sticky top-16 z-10 border-b bg-white p-4">
-        <div className="container flex items-center justify-between">
+        <div className="container flex items-center justify-between px-4">
           <div className="flex-1">
             <h1 className="text-2xl font-bold">{channel.name}</h1>
             {channel.description && (
@@ -292,7 +292,7 @@ export default function ChatPage() {
 
       {/* Messages */}
       <div className="flex-1 overflow-y-auto p-4">
-        <div className="container space-y-4">
+        <div className="container space-y-4 px-4">
           {messages.length === 0 ? (
             <div className="flex h-full items-center justify-center text-muted-foreground">
               <p>No messages yet. Start the conversation!</p>
@@ -322,7 +322,7 @@ export default function ChatPage() {
 
       {/* Input */}
       <div className="sticky bottom-0 border-t bg-white p-4">
-        <form onSubmit={handleSendMessage} className="container">
+        <form onSubmit={handleSendMessage} className="container px-4">
           <div className="flex gap-2">
             <Input
               value={messageInput}

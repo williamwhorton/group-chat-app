@@ -92,7 +92,7 @@ export default function ChannelsPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/30">
       <Navigation />
-      <div className="container py-8">
+      <div className="container px-4 py-8">
         <div className="mb-8 flex items-center justify-between">
           <div>
             <h1 className="font-display text-3xl font-bold tracking-tight">Channels</h1>
