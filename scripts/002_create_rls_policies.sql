@@ -1,3 +1,18 @@
+-- Drop existing policies if they exist
+drop policy if exists "Users can view all profiles" on public.profiles;
+drop policy if exists "Users can update their own profile" on public.profiles;
+drop policy if exists "Anyone can view channels" on public.channels;
+drop policy if exists "Authenticated users can create channels" on public.channels;
+drop policy if exists "Channel creators can update their channels" on public.channels;
+drop policy if exists "Channel creators can delete their channels" on public.channels;
+drop policy if exists "Users can view channel members" on public.channel_members;
+drop policy if exists "Users can join channels" on public.channel_members;
+drop policy if exists "Users can leave channels" on public.channel_members;
+drop policy if exists "Users can view messages in their channels" on public.messages;
+drop policy if exists "Users can send messages to their channels" on public.messages;
+drop policy if exists "Users can update their own messages" on public.messages;
+drop policy if exists "Users can delete their own messages" on public.messages;
+
 -- RLS Policies for profiles table
 create policy "Users can view all profiles"
   on public.profiles
