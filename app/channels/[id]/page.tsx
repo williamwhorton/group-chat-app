@@ -47,10 +47,20 @@ export default function ChatPage() {
   const supabase = createClient()
 
   useEffect(() => {
-    loadChannel()
-    loadMessages()
-    subscribeToMessages()
-    getCurrentUser()
+    const init = async () => {
+      const user = await getCurrentUser()
+      if (user) {
+        const hasAccess = await checkUserAccess(user.id)
+        if (!hasAccess) {
+          router.push('/channels')
+          return
+        }
+      }
+      await loadChannel()
+      await loadMessages()
+      subscribeToMessages()
+    }
+    init()
   }, [channelId])
 
   const getCurrentUser = async () => {
@@ -58,6 +68,35 @@ export default function ChatPage() {
       data: { user },
     } = await supabase.auth.getUser()
     setCurrentUser(user)
+    return user
+  }
+
+  const checkUserAccess = async (userId: string) => {
+    try {
+      // Check if user is the creator
+      const { data: channel } = await supabase
+        .from('channels')
+        .select('creator_id')
+        .eq('id', channelId)
+        .single()
+
+      if (channel?.creator_id === userId) {
+        return true
+      }
+
+      // Check if user is a member
+      const { data: membership } = await supabase
+        .from('channel_members')
+        .select('*')
+        .eq('channel_id', channelId)
+        .eq('user_id', userId)
+        .single()
+
+      return !!membership
+    } catch (error) {
+      console.error('Error checking user access:', error)
+      return false
+    }
   }
 
   const loadChannel = async () => {
@@ -212,6 +251,9 @@ export default function ChatPage() {
                   <div className="flex items-baseline gap-2">
                     <span className="text-sm font-semibold">
                       {message.profiles?.username || 'Unknown user'}
+                    </span>
+                    <span className="text-xs text-muted-foreground">
+                      {message.user_id}
                     </span>
                     <span className="text-xs text-muted-foreground">
                       {new Date(message.created_at).toLocaleTimeString()}
