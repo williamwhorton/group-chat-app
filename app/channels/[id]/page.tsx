@@ -22,6 +22,7 @@ interface Message {
   profiles?: {
     username: string
   }
+  pending?: boolean
 }
 
 interface Channel {
@@ -210,13 +211,17 @@ export default function ChatPage() {
               profiles: profile ? { username: profile.username } : undefined
             }
 
-            console.log('[v0] Adding message to state:', messageWithProfile)
+            console.log('[v0] Confirming message:', messageWithProfile.id)
             setMessages((prev) => {
-              // Avoid duplicates
-              if (prev.some(m => m.id === messageWithProfile.id)) {
-                console.log('[v0] Message already exists, skipping')
-                return prev
+              // Check if this message already exists as a pending message
+              const existingIndex = prev.findIndex(m => m.id === messageWithProfile.id)
+              if (existingIndex >= 0) {
+                // Remove pending flag from existing message
+                const updated = [...prev]
+                updated[existingIndex] = { ...updated[existingIndex], pending: false }
+                return updated
               }
+              // Message doesn't exist yet, add it without pending flag
               return [...prev, messageWithProfile]
             })
           }
@@ -266,12 +271,20 @@ export default function ChatPage() {
         }))
 
         setMessages((prev) => {
-          const combined = [...prev, ...messagesWithProfiles]
-          // Remove duplicates based on id
-          const unique = Array.from(
-            new Map(combined.map(m => [m.id, m])).values()
-          )
-          return unique
+          const updated = [...prev]
+          
+          for (const newMsg of messagesWithProfiles) {
+            const existingIndex = updated.findIndex(m => m.id === newMsg.id)
+            if (existingIndex >= 0) {
+              // Message exists, remove pending flag
+              updated[existingIndex] = { ...updated[existingIndex], pending: false }
+            } else {
+              // New message from polling
+              updated.push(newMsg)
+            }
+          }
+          
+          return updated
         })
       }
     }, 3000)
@@ -287,21 +300,38 @@ export default function ChatPage() {
     e.preventDefault()
     if (!messageInput.trim() || !currentUser) return
 
-    console.log('[v0] Sending message:', messageInput)
+    const tempId = `temp-${Date.now()}`
+    const optimisticMessage: Message = {
+      id: tempId,
+      content: messageInput,
+      user_id: currentUser.id,
+      created_at: new Date().toISOString(),
+      profiles: { username: currentUser.user_metadata?.username || 'You' },
+      pending: true
+    }
+
+    // Add message optimistically
+    setMessages((prev) => [...prev, optimisticMessage])
+    setMessageInput('')
+
+    console.log('[v0] Sending message optimistically:', optimisticMessage)
     try {
       const { data, error } = await supabase.from('messages').insert({
+        id: tempId,
         channel_id: channelId,
         user_id: currentUser.id,
-        content: messageInput,
+        content: optimisticMessage.content,
       }).select()
 
       if (error) {
         console.error('[v0] Error sending message:', error)
+        // Remove the optimistic message on error
+        setMessages((prev) => prev.filter(m => m.id !== tempId))
         throw error
       }
       
       console.log('[v0] Message inserted successfully:', data)
-      setMessageInput('')
+      // The subscription will update the pending flag
     } catch (error) {
       console.error('[v0] Error sending message:', error)
     }
@@ -378,14 +408,20 @@ export default function ChatPage() {
                   key={message.id}
                   className={`flex ${isCurrentUser ? 'justify-start' : 'justify-end'}`}
                 >
-                  <div className={`max-w-[75%] rounded-lg p-3 shadow-md sm:max-w-md ${isCurrentUser ? 'bg-primary/10' : 'bg-card'}`}>
+                  <div className={`max-w-[75%] rounded-lg p-3 shadow-md sm:max-w-md transition-opacity ${
+                    message.pending 
+                      ? 'bg-primary/5 opacity-60' 
+                      : isCurrentUser 
+                        ? 'bg-primary/10' 
+                        : 'bg-card'
+                  }`}>
                     <div className="flex items-baseline gap-2">
                       <span className="text-sm font-semibold">
                         {message.profiles?.username ||
                           `User ${message.user_id.slice(0, 8)}`}
                       </span>
                       <span className="text-xs text-muted-foreground">
-                        {new Date(message.created_at).toLocaleTimeString()}
+                        {message.pending ? 'Sending...' : new Date(message.created_at).toLocaleTimeString()}
                       </span>
                     </div>
                     <p className="mt-1 text-sm leading-relaxed text-foreground">
