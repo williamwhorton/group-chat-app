@@ -3,7 +3,7 @@ import { cookies } from 'next/headers'
 import { NextResponse } from 'next/server'
 
 export async function POST() {
-  const supabase = createClient(await cookies())
+  const supabase = createClient(cookies())
 
   try {
     const {
