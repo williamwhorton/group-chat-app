@@ -292,30 +292,36 @@ export default function ChatPage() {
 
       {/* Messages */}
       <div className="flex-1 overflow-y-auto p-4">
-        <div className="container space-y-4 px-4">
+        <div className="container mx-auto max-w-4xl space-y-3 px-4">
           {messages.length === 0 ? (
             <div className="flex h-full items-center justify-center text-muted-foreground">
               <p>No messages yet. Start the conversation!</p>
             </div>
           ) : (
-            messages.map((message) => (
-              <div key={message.id} className="flex gap-3">
-                <div className="flex-1">
-                  <div className="flex items-baseline gap-2">
-                    <span className="text-sm font-semibold">
-                      {message.profiles?.username ||
-                        `User ${message.user_id.slice(0, 8)}`}
-                    </span>
-                    <span className="text-xs text-muted-foreground">
-                      {new Date(message.created_at).toLocaleTimeString()}
-                    </span>
+            messages.map((message) => {
+              const isCurrentUser = message.user_id === currentUser?.id
+              return (
+                <div
+                  key={message.id}
+                  className={`flex ${isCurrentUser ? 'justify-start' : 'justify-end'}`}
+                >
+                  <div className={`max-w-[75%] rounded-lg p-3 shadow-md sm:max-w-md ${isCurrentUser ? 'bg-primary/10' : 'bg-card'}`}>
+                    <div className="flex items-baseline gap-2">
+                      <span className="text-sm font-semibold">
+                        {message.profiles?.username ||
+                          `User ${message.user_id.slice(0, 8)}`}
+                      </span>
+                      <span className="text-xs text-muted-foreground">
+                        {new Date(message.created_at).toLocaleTimeString()}
+                      </span>
+                    </div>
+                    <p className="mt-1 text-sm leading-relaxed text-foreground">
+                      {message.content}
+                    </p>
                   </div>
-                  <p className="mt-1 text-sm text-foreground">
-                    {message.content}
-                  </p>
                 </div>
-              </div>
-            ))
+              )
+            })
           )}
         </div>
       </div>
