@@ -1,1 +1,3 @@
-export default {}
+const userConfig = {}
+
+export default userConfig
