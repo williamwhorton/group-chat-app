@@ -44,9 +44,9 @@ describe('HomePage', () => {
     render(<HomePage />)
 
     await waitFor(() => {
-      expect(screen.getByText('Group Chat')).toBeInTheDocument()
+      expect(screen.getByText('Treehouse')).toBeInTheDocument()
       expect(
-        screen.getByText(/create channels and chat with your team/i)
+        screen.getByText(/create channels and chat in real-time/i)
       ).toBeInTheDocument()
     })
   })
