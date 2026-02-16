@@ -96,6 +96,13 @@ describe('ChatPage', () => {
             .mockResolvedValue({ data: null, error: { message: 'Not found' } }),
         } as any
       }
+      if (table === 'channel_members') {
+        return {
+          select: jest.fn().mockReturnThis(),
+          eq: jest.fn().mockReturnThis(),
+          single: jest.fn().mockResolvedValue({ data: null, error: null }),
+        } as any
+      }
       return {
         select: jest.fn().mockReturnThis(),
         eq: jest.fn().mockReturnThis(),
@@ -105,9 +112,12 @@ describe('ChatPage', () => {
 
     render(<ChatPage />)
 
-    await waitFor(() => {
-      expect(screen.getByText(/channel not found/i)).toBeInTheDocument()
-    })
+    await waitFor(
+      () => {
+        expect(screen.getByText(/channel not found/i)).toBeInTheDocument()
+      },
+      { timeout: 2000 }
+    )
   })
 
   it('renders channel details and messages', async () => {
@@ -148,6 +158,15 @@ describe('ChatPage', () => {
             .mockResolvedValue({ data: mockChannel, error: null }),
         } as any
       }
+      if (table === 'channel_members') {
+        return {
+          select: jest.fn().mockReturnThis(),
+          eq: jest.fn().mockReturnThis(),
+          single: jest
+            .fn()
+            .mockResolvedValue({ data: { user_id: 'user-123' }, error: null }),
+        } as any
+      }
       if (table === 'messages') {
         return {
           select: jest.fn().mockReturnThis(),
@@ -163,12 +182,15 @@ describe('ChatPage', () => {
 
     render(<ChatPage />)
 
-    await waitFor(() => {
-      expect(screen.getByText('General')).toBeInTheDocument()
-      expect(screen.getByText('General discussion')).toBeInTheDocument()
-      expect(screen.getByText('Hello world')).toBeInTheDocument()
-      expect(screen.getByText('testuser')).toBeInTheDocument()
-    })
+    await waitFor(
+      () => {
+        expect(screen.getByText('General')).toBeInTheDocument()
+        expect(screen.getByText('General discussion')).toBeInTheDocument()
+        expect(screen.getByText('Hello world')).toBeInTheDocument()
+        expect(screen.getByText('testuser')).toBeInTheDocument()
+      },
+      { timeout: 2000 }
+    )
   })
 
   it('shows empty message when no messages exist', async () => {
@@ -196,6 +218,15 @@ describe('ChatPage', () => {
           single: jest
             .fn()
             .mockResolvedValue({ data: mockChannel, error: null }),
+        } as any
+      }
+      if (table === 'channel_members') {
+        return {
+          select: jest.fn().mockReturnThis(),
+          eq: jest.fn().mockReturnThis(),
+          single: jest
+            .fn()
+            .mockResolvedValue({ data: { user_id: 'user-123' }, error: null }),
         } as any
       }
       if (table === 'messages') {
@@ -242,6 +273,15 @@ describe('ChatPage', () => {
           single: jest
             .fn()
             .mockResolvedValue({ data: mockChannel, error: null }),
+        } as any
+      }
+      if (table === 'channel_members') {
+        return {
+          select: jest.fn().mockReturnThis(),
+          eq: jest.fn().mockReturnThis(),
+          single: jest
+            .fn()
+            .mockResolvedValue({ data: { user_id: 'user-123' }, error: null }),
         } as any
       }
       if (table === 'messages') {
@@ -303,6 +343,15 @@ describe('ChatPage', () => {
             .mockResolvedValue({ data: mockChannel, error: null }),
         } as any
       }
+      if (table === 'channel_members') {
+        return {
+          select: jest.fn().mockReturnThis(),
+          eq: jest.fn().mockReturnThis(),
+          single: jest
+            .fn()
+            .mockResolvedValue({ data: { user_id: 'user-456' }, error: null }),
+        } as any
+      }
       if (table === 'messages') {
         return {
           select: jest.fn().mockReturnThis(),
@@ -347,6 +396,15 @@ describe('ChatPage', () => {
           single: jest
             .fn()
             .mockResolvedValue({ data: mockChannel, error: null }),
+        } as any
+      }
+      if (table === 'channel_members') {
+        return {
+          select: jest.fn().mockReturnThis(),
+          eq: jest.fn().mockReturnThis(),
+          single: jest
+            .fn()
+            .mockResolvedValue({ data: { user_id: 'user-123' }, error: null }),
         } as any
       }
       if (table === 'messages') {
@@ -395,6 +453,15 @@ describe('ChatPage', () => {
           single: jest
             .fn()
             .mockResolvedValue({ data: mockChannel, error: null }),
+        } as any
+      }
+      if (table === 'channel_members') {
+        return {
+          select: jest.fn().mockReturnThis(),
+          eq: jest.fn().mockReturnThis(),
+          single: jest
+            .fn()
+            .mockResolvedValue({ data: { user_id: 'user-123' }, error: null }),
         } as any
       }
       if (table === 'messages') {
@@ -459,6 +526,15 @@ describe('ChatPage', () => {
             .mockResolvedValue({ data: mockChannel, error: null }),
         } as any
       }
+      if (table === 'channel_members') {
+        return {
+          select: jest.fn().mockReturnThis(),
+          eq: jest.fn().mockReturnThis(),
+          single: jest
+            .fn()
+            .mockResolvedValue({ data: { user_id: 'user-123' }, error: null }),
+        } as any
+      }
       if (table === 'messages') {
         return {
           select: jest.fn().mockReturnThis(),
@@ -495,9 +571,12 @@ describe('ChatPage', () => {
       })
     })
 
-    await waitFor(() => {
-      expect(screen.getByText('New message')).toBeInTheDocument()
-      expect(screen.getByText('newuser')).toBeInTheDocument()
-    })
+    await waitFor(
+      () => {
+        expect(screen.getByText('New message')).toBeInTheDocument()
+        expect(screen.getByText('newuser')).toBeInTheDocument()
+      },
+      { timeout: 2000 }
+    )
   })
 })

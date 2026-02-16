@@ -1,0 +1,279 @@
+ PASS  app/auth/callback/__tests__/route.test.ts
+ PASS  app/api/account/delete/__tests__/route.test.ts
+  ● Console
+    console.error
+      Account deletion error: { message: 'Channels error' }
+      54 |     return NextResponse.json({ success: true })
+      55 |   } catch (error) {
+    > 56 |     console.error('Account deletion error:', error)
+         |             ^
+      57 |     return NextResponse.json(
+      58 |       { error: 'Failed to delete account', details: error },
+      59 |       { status: 500 }
+      at error (app/api/account/delete/route.ts:56:13)
+      at Object.<anonymous> (app/api/account/delete/__tests__/route.test.ts:124:22)
+    console.error
+      Account deletion error: { message: 'Delete channel error' }
+      54 |     return NextResponse.json({ success: true })
+      55 |   } catch (error) {
+    > 56 |     console.error('Account deletion error:', error)
+         |             ^
+      57 |     return NextResponse.json(
+      58 |       { error: 'Failed to delete account', details: error },
+      59 |       { status: 500 }
+      at error (app/api/account/delete/route.ts:56:13)
+      at Object.<anonymous> (app/api/account/delete/__tests__/route.test.ts:161:22)
+    console.error
+      Account deletion error: { message: 'Leave error' }
+      54 |     return NextResponse.json({ success: true })
+      55 |   } catch (error) {
+    > 56 |     console.error('Account deletion error:', error)
+         |             ^
+      57 |     return NextResponse.json(
+      58 |       { error: 'Failed to delete account', details: error },
+      59 |       { status: 500 }
+      at error (app/api/account/delete/route.ts:56:13)
+      at Object.<anonymous> (app/api/account/delete/__tests__/route.test.ts:186:22)
+    console.error
+      Account deletion error: { message: 'Profile error' }
+      54 |     return NextResponse.json({ success: true })
+      55 |   } catch (error) {
+    > 56 |     console.error('Account deletion error:', error)
+         |             ^
+      57 |     return NextResponse.json(
+      58 |       { error: 'Failed to delete account', details: error },
+      59 |       { status: 500 }
+      at error (app/api/account/delete/route.ts:56:13)
+      at Object.<anonymous> (app/api/account/delete/__tests__/route.test.ts:211:22)
+    console.error
+      Account deletion error: Error: Database error
+          at Object.<anonymous> (F:\WebStormProjects\group-chat-app\app\api\account\delete\__tests__\route.test.ts:220:19)
+          at Promise.then.completed (F:\WebStormProjects\group-chat-app\node_modules\.pnpm\jest-circus@29.7.0\node_modules\jest-circus\build\utils.js:298:28)
+          at new Promise (<anonymous>)
+          at callAsyncCircusFn (F:\WebStormProjects\group-chat-app\node_modules\.pnpm\jest-circus@29.7.0\node_modules\jest-circus\build\utils.js:231:10)
+          at _callCircusTest (F:\WebStormProjects\group-chat-app\node_modules\.pnpm\jest-circus@29.7.0\node_modules\jest-circus\build\run.js:316:40)
+          at processTicksAndRejections (node:internal/process/task_queues:105:5)
+          at _runTest (F:\WebStormProjects\group-chat-app\node_modules\.pnpm\jest-circus@29.7.0\node_modules\jest-circus\build\run.js:252:3)
+          at _runTestsForDescribeBlock (F:\WebStormProjects\group-chat-app\node_modules\.pnpm\jest-circus@29.7.0\node_modules\jest-circus\build\run.js:126:9)
+          at _runTestsForDescribeBlock (F:\WebStormProjects\group-chat-app\node_modules\.pnpm\jest-circus@29.7.0\node_modules\jest-circus\build\run.js:121:9)
+          at run (F:\WebStormProjects\group-chat-app\node_modules\.pnpm\jest-circus@29.7.0\node_modules\jest-circus\build\run.js:71:3)
+          at runAndTransformResultsToJestFormat (F:\WebStormProjects\group-chat-app\node_modules\.pnpm\jest-circus@29.7.0\node_modules\jest-circus\build\legacy-code-todo-rewrite\jestAdapterInit.js:122:21)
+          at jestAdapter (F:\WebStormProjects\group-chat-app\node_modules\.pnpm\jest-circus@29.7.0\node_modules\jest-circus\build\legacy-code-todo-rewrite\jestAdapter.js:79:19)
+          at runTestInternal (F:\WebStormProjects\group-chat-app\node_modules\.pnpm\jest-runner@29.7.0\node_modules\jest-runner\build\runTest.js:367:16)
+          at runTest (F:\WebStormProjects\group-chat-app\node_modules\.pnpm\jest-runner@29.7.0\node_modules\jest-runner\build\runTest.js:444:34)
+          at Object.worker (F:\WebStormProjects\group-chat-app\node_modules\.pnpm\jest-runner@29.7.0\node_modules\jest-runner\build\testWorker.js:106:12)
+      54 |     return NextResponse.json({ success: true })
+      55 |   } catch (error) {
+    > 56 |     console.error('Account deletion error:', error)
+         |             ^
+      57 |     return NextResponse.json(
+      58 |       { error: 'Failed to delete account', details: error },
+      59 |       { status: 500 }
+      at error (app/api/account/delete/route.ts:56:13)
+      at Object.<anonymous> (app/api/account/delete/__tests__/route.test.ts:226:22)
+ PASS  __tests__/api/invitation-token.test.ts
+  ● Console
+    console.error
+      Fetch invitation error: { message: 'DB Error' }
+      19 |
+      20 |     if (error) {
+    > 21 |       console.error('Fetch invitation error:', error)
+         |               ^
+      22 |       return NextResponse.json(
+      23 |         { error: 'Database error', details: error.message },
+      24 |         { status: 500 }
+      at Object.error (app/api/invitations/[token]/route.ts:21:15)
+      at Object.<anonymous> (__tests__/api/invitation-token.test.ts:119:24)
+ PASS  __tests__/api/invitations.test.ts
+  ● Console
+    console.error
+      Fetch invitations error: Error: DB Error
+          at Object.<anonymous> (F:\WebStormProjects\group-chat-app\__tests__\api\invitations.test.ts:294:58)
+          at F:\WebStormProjects\group-chat-app\node_modules\.pnpm\jest-mock@29.7.0\node_modules\jest-mock\build\index.js:397:39
+          at Object.<anonymous> (F:\WebStormProjects\group-chat-app\node_modules\.pnpm\jest-mock@29.7.0\node_modules\jest-mock\build\index.js:404:13)
+          at Object.mockConstructor [as from] (F:\WebStormProjects\group-chat-app\node_modules\.pnpm\jest-mock@29.7.0\node_modules\jest-mock\build\index.js:148:19)
+          at Object.from (F:\WebStormProjects\group-chat-app\app\api\channels\[id]\invitations\route.ts:119:8)
+          at processTicksAndRejections (node:internal/process/task_queues:105:5)
+          at Object.<anonymous> (F:\WebStormProjects\group-chat-app\__tests__\api\invitations.test.ts:296:24)
+      138 |     return NextResponse.json(invitations)
+      139 |   } catch (error) {
+    > 140 |     console.error('Fetch invitations error:', error)
+          |             ^
+      141 |     return NextResponse.json(
+      142 |       { error: 'Internal Server Error' },
+      143 |       { status: 500 }
+      at Object.error (app/api/channels/[id]/invitations/route.ts:140:13)
+      at Object.<anonymous> (__tests__/api/invitations.test.ts:296:24)
+ PASS  app/auth/error/__tests__/error.test.tsx
+ PASS  app/__tests__/page.test.tsx
+ PASS  __tests__/pages/invite-page.test.tsx
+ PASS  app/auth/__tests__/login.test.tsx
+ PASS  components/__tests__/navigation.test.tsx
+ PASS  components/__tests__/delete-channel-modal.test.tsx
+  ● Console
+    console.error
+      Error deleting channel: { message: 'Failed to delete' }
+      43 |       onDeleted?.()
+      44 |     } catch (error) {
+    > 45 |       console.error('Error deleting channel:', error)
+         |               ^
+      46 |       alert('Failed to delete channel')
+      47 |     } finally {
+      48 |       setLoading(false)
+      at error (components/delete-channel-modal.tsx:45:15)
+ PASS  app/auth/sign-up/__tests__/sign-up.test.tsx
+ PASS  app/channels/[id]/__tests__/channel-detail.test.tsx
+  ● Console
+    console.error
+      An update to ChatPage inside a test was not wrapped in act(...).
+
+      When testing, code that causes React state updates should be wrapped into act(...):
+
+      act(() => {
+        /* fire events that update state */
+      });
+      /* assert on the output */
+
+      This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+      68 |       data: { user },
+      69 |     } = await supabase.auth.getUser()
+    > 70 |     setCurrentUser(user)
+         |     ^
+      71 |     return user
+      72 |   }
+      73 |
+      at node_modules/.pnpm/react-dom@19.2.3_react@19.2.3/node_modules/react-dom/cjs/react-dom-client.development.js:18758:19
+      at runWithFiberInDEV (node_modules/.pnpm/react-dom@19.2.3_react@19.2.3/node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+      at warnIfUpdatesNotWrappedWithActDEV (node_modules/.pnpm/react-dom@19.2.3_react@19.2.3/node_modules/react-dom/cjs/react-dom-client.development.js:18757:9)
+      at scheduleUpdateOnFiber (node_modules/.pnpm/react-dom@19.2.3_react@19.2.3/node_modules/react-dom/cjs/react-dom-client.development.js:16409:11)
+      at dispatchSetStateInternal (node_modules/.pnpm/react-dom@19.2.3_react@19.2.3/node_modules/react-dom/cjs/react-dom-client.development.js:9170:13)
+      at dispatchSetState (node_modules/.pnpm/react-dom@19.2.3_react@19.2.3/node_modules/react-dom/cjs/react-dom-client.development.js:9127:7)
+      at setCurrentUser (app/channels/[id]/page.tsx:70:5)
+      at init (app/channels/[id]/page.tsx:51:20)
+    console.error
+      An update to ChatPage inside a test was not wrapped in act(...).
+
+      When testing, code that causes React state updates should be wrapped into act(...):
+
+      act(() => {
+        /* fire events that update state */
+      });
+      /* assert on the output */
+
+      This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+      117 |         return
+      118 |       }
+    > 119 |       setChannel(data)
+          |       ^
+      120 |     } catch (error) {
+      121 |       console.error('Error loading channel:', error)
+      122 |       setLoading(false)
+      at node_modules/.pnpm/react-dom@19.2.3_react@19.2.3/node_modules/react-dom/cjs/react-dom-client.development.js:18758:19
+      at runWithFiberInDEV (node_modules/.pnpm/react-dom@19.2.3_react@19.2.3/node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+      at warnIfUpdatesNotWrappedWithActDEV (node_modules/.pnpm/react-dom@19.2.3_react@19.2.3/node_modules/react-dom/cjs/react-dom-client.development.js:18757:9)
+      at scheduleUpdateOnFiber (node_modules/.pnpm/react-dom@19.2.3_react@19.2.3/node_modules/react-dom/cjs/react-dom-client.development.js:16409:11)
+      at dispatchSetStateInternal (node_modules/.pnpm/react-dom@19.2.3_react@19.2.3/node_modules/react-dom/cjs/react-dom-client.development.js:9170:13)
+      at dispatchSetState (node_modules/.pnpm/react-dom@19.2.3_react@19.2.3/node_modules/react-dom/cjs/react-dom-client.development.js:9127:7)
+      at setChannel (app/channels/[id]/page.tsx:119:7)
+      at init (app/channels/[id]/page.tsx:52:7)
+    console.error
+      An update to ChatPage inside a test was not wrapped in act(...).
+
+      When testing, code that causes React state updates should be wrapped into act(...):
+
+      act(() => {
+        /* fire events that update state */
+      });
+      /* assert on the output */
+
+      This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+      133 |
+      134 |       if (error) throw error
+    > 135 |       setMessages(data || [])
+          |       ^
+      136 |     } catch (error) {
+      137 |       console.error('Error loading messages:', error)
+      138 |     } finally {
+      at node_modules/.pnpm/react-dom@19.2.3_react@19.2.3/node_modules/react-dom/cjs/react-dom-client.development.js:18758:19
+      at runWithFiberInDEV (node_modules/.pnpm/react-dom@19.2.3_react@19.2.3/node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+      at warnIfUpdatesNotWrappedWithActDEV (node_modules/.pnpm/react-dom@19.2.3_react@19.2.3/node_modules/react-dom/cjs/react-dom-client.development.js:18757:9)
+      at scheduleUpdateOnFiber (node_modules/.pnpm/react-dom@19.2.3_react@19.2.3/node_modules/react-dom/cjs/react-dom-client.development.js:16409:11)
+      at dispatchSetStateInternal (node_modules/.pnpm/react-dom@19.2.3_react@19.2.3/node_modules/react-dom/cjs/react-dom-client.development.js:9170:13)
+      at dispatchSetState (node_modules/.pnpm/react-dom@19.2.3_react@19.2.3/node_modules/react-dom/cjs/react-dom-client.development.js:9127:7)
+      at setMessages (app/channels/[id]/page.tsx:135:7)
+      at init (app/channels/[id]/page.tsx:60:7)
+    console.error
+      An update to ChatPage inside a test was not wrapped in act(...).
+
+      When testing, code that causes React state updates should be wrapped into act(...):
+
+      act(() => {
+        /* fire events that update state */
+      });
+      /* assert on the output */
+
+      This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+      137 |       console.error('Error loading messages:', error)
+      138 |     } finally {
+    > 139 |       setLoading(false)
+          |       ^
+      140 |     }
+      141 |   }
+      142 |
+      at node_modules/.pnpm/react-dom@19.2.3_react@19.2.3/node_modules/react-dom/cjs/react-dom-client.development.js:18758:19
+      at runWithFiberInDEV (node_modules/.pnpm/react-dom@19.2.3_react@19.2.3/node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+      at warnIfUpdatesNotWrappedWithActDEV (node_modules/.pnpm/react-dom@19.2.3_react@19.2.3/node_modules/react-dom/cjs/react-dom-client.development.js:18757:9)
+      at scheduleUpdateOnFiber (node_modules/.pnpm/react-dom@19.2.3_react@19.2.3/node_modules/react-dom/cjs/react-dom-client.development.js:16409:11)
+      at dispatchSetStateInternal (node_modules/.pnpm/react-dom@19.2.3_react@19.2.3/node_modules/react-dom/cjs/react-dom-client.development.js:9170:13)
+      at dispatchSetState (node_modules/.pnpm/react-dom@19.2.3_react@19.2.3/node_modules/react-dom/cjs/react-dom-client.development.js:9127:7)
+      at setLoading (app/channels/[id]/page.tsx:139:7)
+      at init (app/channels/[id]/page.tsx:60:7)
+ PASS  components/__tests__/invite-user-modal.test.tsx
+  ● Console
+    console.error
+      An update to InviteUserModal inside a test was not wrapped in act(...).
+
+      When testing, code that causes React state updates should be wrapped into act(...):
+
+      act(() => {
+        /* fire events that update state */
+      });
+      /* assert on the output */
+
+      This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+      45 |       if (res.ok) {
+      46 |         const data = await res.json()
+    > 47 |         setPendingInvites(data)
+         |         ^
+      48 |       }
+      49 |     } catch (err) {
+      50 |       console.error('Failed to fetch invites', err)
+      at node_modules/.pnpm/react-dom@19.2.3_react@19.2.3/node_modules/react-dom/cjs/react-dom-client.development.js:18758:19
+      at runWithFiberInDEV (node_modules/.pnpm/react-dom@19.2.3_react@19.2.3/node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+      at warnIfUpdatesNotWrappedWithActDEV (node_modules/.pnpm/react-dom@19.2.3_react@19.2.3/node_modules/react-dom/cjs/react-dom-client.development.js:18757:9)
+      at scheduleUpdateOnFiber (node_modules/.pnpm/react-dom@19.2.3_react@19.2.3/node_modules/react-dom/cjs/react-dom-client.development.js:16409:11)
+      at dispatchSetStateInternal (node_modules/.pnpm/react-dom@19.2.3_react@19.2.3/node_modules/react-dom/cjs/react-dom-client.development.js:9170:13)
+      at dispatchSetState (node_modules/.pnpm/react-dom@19.2.3_react@19.2.3/node_modules/react-dom/cjs/react-dom-client.development.js:9127:7)
+      at setPendingInvites (components/invite-user-modal.tsx:47:9)
+ PASS  components/__tests__/delete-account-modal.test.tsx
+  ● Console
+    console.error
+      Error deleting account: Error: Failed to delete account
+          at handleDelete (F:\WebStormProjects\group-chat-app\components\delete-account-modal.tsx:51:15)
+      59 |       router.push('/')
+      60 |     } catch (error) {
+    > 61 |       console.error('Error deleting account:', error)
+         |               ^
+      62 |       alert('Failed to delete account')
+      63 |     } finally {
+      64 |       setLoading(false)
+      at error (components/delete-account-modal.tsx:61:15)
+ PASS  app/channels/__tests__/channels.test.tsx
+ PASS  app/settings/__tests__/settings.test.tsx
+ PASS  components/__tests__/create-channel-modal.test.tsx
+Test Suites: 17 passed, 17 total
+Tests:       117 passed, 117 total
+Snapshots:   0 total
+Time:        5.868 s
+Ran all test suites.
+Test results written to: test-results.json

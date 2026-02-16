@@ -49,6 +49,7 @@ export default function ChatPage() {
   useEffect(() => {
     const init = async () => {
       const user = await getCurrentUser()
+      await loadChannel()
       if (user) {
         const hasAccess = await checkUserAccess(user.id)
         if (!hasAccess) {
@@ -56,7 +57,6 @@ export default function ChatPage() {
           return
         }
       }
-      await loadChannel()
       await loadMessages()
       subscribeToMessages()
     }
@@ -74,13 +74,18 @@ export default function ChatPage() {
   const checkUserAccess = async (userId: string) => {
     try {
       // Check if user is the creator
-      const { data: channel } = await supabase
+      const { data: channel, error } = await supabase
         .from('channels')
         .select('creator_id')
         .eq('id', channelId)
         .single()
 
-      if (channel?.creator_id === userId) {
+      if (error || !channel) {
+        // If channel doesn't exist, we let loadChannel handle it (not found)
+        return true
+      }
+
+      if (channel.creator_id === userId) {
         return true
       }
 
@@ -107,10 +112,14 @@ export default function ChatPage() {
         .eq('id', channelId)
         .single()
 
-      if (error) throw error
+      if (error) {
+        setLoading(false)
+        return
+      }
       setChannel(data)
     } catch (error) {
       console.error('Error loading channel:', error)
+      setLoading(false)
     }
   }
 
@@ -118,7 +127,7 @@ export default function ChatPage() {
     try {
       const { data, error } = await supabase
         .from('messages')
-        .select('*')
+        .select('*, profiles(username)')
         .eq('channel_id', channelId)
         .order('created_at', { ascending: true })
 
@@ -146,7 +155,7 @@ export default function ChatPage() {
           if (payload.eventType === 'INSERT') {
             const { data: newMessage } = await supabase
               .from('messages')
-              .select('*')
+              .select('*, profiles(username)')
               .eq('id', payload.new.id)
               .single()
 
@@ -250,7 +259,8 @@ export default function ChatPage() {
                 <div className="flex-1">
                   <div className="flex items-baseline gap-2">
                     <span className="text-sm font-semibold">
-                      User {message.user_id.slice(0, 8)}
+                      {message.profiles?.username ||
+                        `User ${message.user_id.slice(0, 8)}`}
                     </span>
                     <span className="text-xs text-muted-foreground">
                       {new Date(message.created_at).toLocaleTimeString()}
