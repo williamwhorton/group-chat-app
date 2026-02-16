@@ -44,11 +44,16 @@ export default function InviteUserModal({
         .textSearch('username', email, { type: 'websearch', config: 'english' })
         .limit(1)
 
-      if (fetchError) throw fetchError
+      if (fetchError) {
+        setError(fetchError.message)
+        return
+      }
 
       // For now, show an error that manual invites aren't set up
       // In production, you'd send an email invitation
-      setError('Email invitations coming soon! For now, share the channel ID with users.')
+      setError(
+        'Email invitations coming soon! For now, share the channel ID with users.'
+      )
     } catch (error) {
       setError(error instanceof Error ? error.message : 'Failed to invite user')
     } finally {
@@ -81,9 +86,11 @@ export default function InviteUserModal({
           </div>
 
           {error && <p className="text-sm text-destructive">{error}</p>}
-          {success && <p className="text-sm text-green-600">Invitation sent!</p>}
+          {success && (
+            <p className="text-sm text-green-600">Invitation sent!</p>
+          )}
 
-          <div className="flex gap-2 justify-end">
+          <div className="flex justify-end gap-2">
             <Button
               type="button"
               variant="outline"

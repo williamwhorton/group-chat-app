@@ -37,7 +37,9 @@ export default function CreateChannelModal({
     setError(null)
 
     try {
-      const { data: { user } } = await supabase.auth.getUser()
+      const {
+        data: { user },
+      } = await supabase.auth.getUser()
       if (!user) throw new Error('Not authenticated')
 
       // Create channel
@@ -68,7 +70,9 @@ export default function CreateChannelModal({
       onOpenChange(false)
       onChannelCreated?.()
     } catch (error) {
-      setError(error instanceof Error ? error.message : 'Failed to create channel')
+      setError(
+        error instanceof Error ? error.message : 'Failed to create channel'
+      )
     } finally {
       setLoading(false)
     }
@@ -111,7 +115,7 @@ export default function CreateChannelModal({
 
           {error && <p className="text-sm text-destructive">{error}</p>}
 
-          <div className="flex gap-2 justify-end">
+          <div className="flex justify-end gap-2">
             <Button
               type="button"
               variant="outline"

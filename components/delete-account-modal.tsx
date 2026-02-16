@@ -37,7 +37,9 @@ export default function DeleteAccountModal({
 
     setLoading(true)
     try {
-      const { data: { user } } = await supabase.auth.getUser()
+      const {
+        data: { user },
+      } = await supabase.auth.getUser()
       if (!user) throw new Error('Not authenticated')
 
       // Call API to delete account
@@ -69,8 +71,9 @@ export default function DeleteAccountModal({
         <AlertDialogHeader>
           <AlertDialogTitle>Delete Account?</AlertDialogTitle>
           <AlertDialogDescription>
-            This action cannot be undone. Your account will be permanently deleted.
-            All channels you created will also be deleted, but messages you posted in other channels will remain.
+            This action cannot be undone. Your account will be permanently
+            deleted. All channels you created will also be deleted, but messages
+            you posted in other channels will remain.
           </AlertDialogDescription>
         </AlertDialogHeader>
 
@@ -89,7 +92,7 @@ export default function DeleteAccountModal({
           </div>
         </div>
 
-        <div className="flex gap-2 justify-end">
+        <div className="flex justify-end gap-2">
           <AlertDialogCancel disabled={loading}>Cancel</AlertDialogCancel>
           <AlertDialogAction
             onClick={handleDelete}

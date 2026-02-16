@@ -19,8 +19,22 @@ const customJestConfig = {
     '!**/*.d.ts',
     '!**/node_modules/**',
     '!**/.next/**',
+    '!components/ui/**',
+    '!app/layout.tsx',
+    '!app/not-found.tsx',
+    '!lib/supabase/middleware.ts',
+    '!lib/supabase/proxy.ts',
+    '!lib/supabase/server.ts',
   ],
   testMatch: ['**/__tests__/**/*.test.{js,jsx,ts,tsx}'],
+  coverageThreshold: {
+    global: {
+      lines: 80,
+      functions: 80,
+      branches: 80,
+      statements: 80,
+    },
+  },
 }
 
 // createJestConfig is exported this way to ensure that next/jest can load the Next.js config which is async

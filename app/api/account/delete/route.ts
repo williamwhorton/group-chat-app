@@ -5,12 +5,11 @@ export async function POST() {
   const supabase = await createClient()
 
   try {
-    const { data: { user } } = await supabase.auth.getUser()
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
     if (!user) {
-      return NextResponse.json(
-        { error: 'Not authenticated' },
-        { status: 401 }
-      )
+      return NextResponse.json({ error: 'Not authenticated' }, { status: 401 })
     }
 
     // Get all channels created by this user

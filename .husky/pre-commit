@@ -1,0 +1,61 @@
+#!/bin/sh
+
+# Color codes for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+NC='\033[0m' # No Color
+
+echo "${YELLOW}Running pre-commit checks...${NC}"
+
+# Run Prettier check
+echo "${YELLOW}Checking code formatting with Prettier...${NC}"
+npm run format
+
+if [ $? -ne 0 ]; then
+  echo "${RED}❌ Formatting errors detected. Run 'npm run format:fix' to fix them. Commit aborted.${NC}"
+  exit 1
+fi
+
+# Run ESLint
+echo "${YELLOW}Running ESLint...${NC}"
+npm run lint
+
+if [ $? -ne 0 ]; then
+  echo "${RED}❌ Linting errors detected. Run 'npm run lint:fix' to fix them. Commit aborted.${NC}"
+  exit 1
+fi
+
+# Run unit tests with coverage
+echo "${YELLOW}Running unit tests with coverage...${NC}"
+npm test -- --coverage --watchAll=false --bail
+
+if [ $? -ne 0 ]; then
+  echo "${RED}❌ Unit tests failed. Commit aborted.${NC}"
+  exit 1
+fi
+
+# Extract coverage percentage
+COVERAGE=$(npm test -- --coverage --watchAll=false --listTests 2>&1 | grep -oP 'Lines\s*:\s*\K[0-9.]+' | head -1)
+
+if [ -z "$COVERAGE" ]; then
+  # Fallback: try to get coverage from coverage report
+  if [ -f coverage/coverage-summary.json ]; then
+    COVERAGE=$(node -e "const data = require('./coverage/coverage-summary.json'); console.log(Math.round(data.total.lines.pct))")
+  else
+    echo "${YELLOW}⚠️  Could not determine coverage percentage${NC}"
+    COVERAGE=0
+  fi
+fi
+
+echo "${YELLOW}Current coverage: ${COVERAGE}%${NC}"
+
+# Check if coverage meets threshold
+THRESHOLD=80
+if (( $(echo "$COVERAGE < $THRESHOLD" | bc -l) )); then
+  echo "${RED}❌ Coverage is ${COVERAGE}%, below the ${THRESHOLD}% threshold. Commit aborted.${NC}"
+  exit 1
+fi
+
+echo "${GREEN}✅ All pre-commit checks passed!${NC}"
+exit 0

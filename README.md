@@ -1,4 +1,4 @@
-# Group Chat SaaS Application
+# Treehouse Group Chat
 
 A real-time group chat application built with Next.js, React, Supabase, and Tailwind CSS.
 
@@ -18,7 +18,41 @@ A real-time group chat application built with Next.js, React, Supabase, and Tail
 - **Real-time**: Supabase Realtime
 - **Authentication**: Supabase Auth
 - **Styling**: Tailwind CSS, shadcn/ui
+- **Testing**: Jest, Testing Library, Cypress
+- **Code Quality**: ESLint, Prettier
+- **CI/CD**: GitHub Actions, Husky
 - **Deployment**: Vercel
+
+## Testing & Code Quality
+
+This project includes comprehensive testing and code quality checks:
+
+- **Unit Tests**: Jest with Testing Library (80% coverage required)
+- **E2E Tests**: Cypress for integration testing
+- **Linting**: ESLint with Next.js and Prettier configs
+- **Pre-commit Hooks**: Automatic formatting, linting, and testing before commits
+- **CI/CD**: GitHub Actions workflow runs tests on all PRs to main
+
+See [TESTING.md](./TESTING.md) for detailed testing documentation.
+
+### Running Tests
+
+```bash
+# Unit tests
+pnpm test
+
+# Unit tests with coverage
+pnpm test:coverage
+
+# E2E tests
+pnpm test:e2e
+
+# Linting
+pnpm lint
+
+# Format code
+pnpm format:fix
+```
 
 ## Getting Started
 
@@ -31,11 +65,13 @@ A real-time group chat application built with Next.js, React, Supabase, and Tail
 
 1. Clone the repository
 2. Install dependencies:
+
    ```bash
    pnpm install
    ```
 
 3. Create a `.env.local` file with your Supabase credentials:
+
    ```
    NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
    NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
@@ -44,6 +80,7 @@ A real-time group chat application built with Next.js, React, Supabase, and Tail
 4. Create the database schema in Supabase by running the SQL from `scripts/001_create_schema.sql`
 
 5. Run the development server:
+
    ```bash
    pnpm dev
    ```
@@ -78,24 +115,28 @@ All tables have Row Level Security enabled to protect user data.
 ## Features Detail
 
 ### Authentication Flow
+
 - Users sign up with email and password
 - Email verification required
 - User profiles auto-created on signup
 - Sessions managed via Supabase Auth
 
 ### Channel Creation
+
 - Only authenticated users can create channels
 - Channel creator is the owner
 - Owners can invite members and delete channels
 - Deleting a channel cascades to delete all messages
 
 ### Messaging
+
 - Real-time message delivery via Supabase Realtime
 - Message history persists in database
 - Users can see all messages in channels they're members of
 - Messages show sender username and timestamp
 
 ### Account Deletion
+
 - Users can delete their own accounts
 - Deletes all channels created by the user
 - Removes user from other channels

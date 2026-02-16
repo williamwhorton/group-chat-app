@@ -51,7 +51,9 @@ export default function ChatPage() {
   }, [channelId])
 
   const getCurrentUser = async () => {
-    const { data: { user } } = await supabase.auth.getUser()
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
     setCurrentUser(user)
   }
 
@@ -156,15 +158,17 @@ export default function ChatPage() {
   const isChannelCreator = currentUser?.id === channel.creator_id
 
   return (
-    <div className="flex flex-col h-screen bg-background">
+    <div className="flex h-screen flex-col bg-background">
       <Navigation />
       {/* Header */}
-      <div className="border-b bg-white p-4 sticky top-16 z-10">
+      <div className="sticky top-16 z-10 border-b bg-white p-4">
         <div className="container flex items-center justify-between">
           <div className="flex-1">
             <h1 className="text-2xl font-bold">{channel.name}</h1>
             {channel.description && (
-              <p className="text-sm text-muted-foreground">{channel.description}</p>
+              <p className="text-sm text-muted-foreground">
+                {channel.description}
+              </p>
             )}
           </div>
           <div className="flex gap-2">
@@ -173,7 +177,7 @@ export default function ChatPage() {
               size="sm"
               onClick={() => setShowInviteModal(true)}
             >
-              <Users className="h-4 w-4 mr-2" />
+              <Users className="mr-2 h-4 w-4" />
               Invite
             </Button>
             {isChannelCreator && (
@@ -183,7 +187,7 @@ export default function ChatPage() {
                 onClick={() => setShowDeleteModal(true)}
                 className="text-destructive hover:text-destructive"
               >
-                <Trash2 className="h-4 w-4 mr-2" />
+                <Trash2 className="mr-2 h-4 w-4" />
                 Delete
               </Button>
             )}
@@ -195,7 +199,7 @@ export default function ChatPage() {
       <div className="flex-1 overflow-y-auto p-4">
         <div className="container space-y-4">
           {messages.length === 0 ? (
-            <div className="flex items-center justify-center h-full text-muted-foreground">
+            <div className="flex h-full items-center justify-center text-muted-foreground">
               <p>No messages yet. Start the conversation!</p>
             </div>
           ) : (
@@ -203,14 +207,16 @@ export default function ChatPage() {
               <div key={message.id} className="flex gap-3">
                 <div className="flex-1">
                   <div className="flex items-baseline gap-2">
-                    <span className="font-semibold text-sm">
+                    <span className="text-sm font-semibold">
                       {message.profiles?.username || 'Unknown user'}
                     </span>
                     <span className="text-xs text-muted-foreground">
                       {new Date(message.created_at).toLocaleTimeString()}
                     </span>
                   </div>
-                  <p className="text-sm text-foreground mt-1">{message.content}</p>
+                  <p className="mt-1 text-sm text-foreground">
+                    {message.content}
+                  </p>
                 </div>
               </div>
             ))
@@ -219,7 +225,7 @@ export default function ChatPage() {
       </div>
 
       {/* Input */}
-      <div className="border-t bg-white p-4 sticky bottom-0">
+      <div className="sticky bottom-0 border-t bg-white p-4">
         <form onSubmit={handleSendMessage} className="container">
           <div className="flex gap-2">
             <Input
@@ -228,7 +234,10 @@ export default function ChatPage() {
               placeholder="Type a message..."
               disabled={!currentUser}
             />
-            <Button type="submit" disabled={!messageInput.trim() || !currentUser}>
+            <Button
+              type="submit"
+              disabled={!messageInput.trim() || !currentUser}
+            >
               <Send className="h-4 w-4" />
             </Button>
           </div>
