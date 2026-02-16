@@ -118,7 +118,7 @@ export default function ChatPage() {
     try {
       const { data, error } = await supabase
         .from('messages')
-        .select('*, profiles(username)')
+        .select('*, profiles!messages_user_id_fkey(username)')
         .eq('channel_id', channelId)
         .order('created_at', { ascending: true })
 
@@ -146,7 +146,7 @@ export default function ChatPage() {
           if (payload.eventType === 'INSERT') {
             const { data: newMessage } = await supabase
               .from('messages')
-              .select('*, profiles(username)')
+              .select('*, profiles!messages_user_id_fkey(username)')
               .eq('id', payload.new.id)
               .single()
 
