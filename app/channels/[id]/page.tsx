@@ -48,8 +48,14 @@ export default function ChatPage() {
 
   useEffect(() => {
     const init = async () => {
-      await getCurrentUser()
-      await ensureUserIsMember()
+      const user = await getCurrentUser()
+      if (user) {
+        const hasAccess = await checkUserAccess(user.id)
+        if (!hasAccess) {
+          router.push('/channels')
+          return
+        }
+      }
       await loadChannel()
       await loadMessages()
       subscribeToMessages()
@@ -65,41 +71,31 @@ export default function ChatPage() {
     return user
   }
 
-  const ensureUserIsMember = async () => {
+  const checkUserAccess = async (userId: string) => {
     try {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser()
-      if (!user) return
+      // Check if user is the creator
+      const { data: channel } = await supabase
+        .from('channels')
+        .select('creator_id')
+        .eq('id', channelId)
+        .single()
 
-      console.log('[v0] Ensuring user is member of channel:', channelId)
-      
-      // Check if already a member
-      const { data: existingMember } = await supabase
+      if (channel?.creator_id === userId) {
+        return true
+      }
+
+      // Check if user is a member
+      const { data: membership } = await supabase
         .from('channel_members')
         .select('*')
         .eq('channel_id', channelId)
-        .eq('user_id', user.id)
+        .eq('user_id', userId)
         .single()
 
-      if (!existingMember) {
-        console.log('[v0] Adding user to channel members')
-        // Add user as member
-        const { error } = await supabase.from('channel_members').insert({
-          channel_id: channelId,
-          user_id: user.id,
-        })
-
-        if (error) {
-          console.error('[v0] Error adding user to channel:', error)
-        } else {
-          console.log('[v0] User added to channel successfully')
-        }
-      } else {
-        console.log('[v0] User is already a member')
-      }
+      return !!membership
     } catch (error) {
-      console.error('[v0] Error in ensureUserIsMember:', error)
+      console.error('Error checking user access:', error)
+      return false
     }
   }
 
@@ -120,7 +116,6 @@ export default function ChatPage() {
 
   const loadMessages = async () => {
     try {
-      console.log('[v0] Loading messages for channel:', channelId)
       const { data, error } = await supabase
         .from('messages')
         .select('*, profiles(username)')
@@ -128,7 +123,6 @@ export default function ChatPage() {
         .order('created_at', { ascending: true })
 
       if (error) throw error
-      console.log('[v0] Loaded messages:', data)
       setMessages(data || [])
     } catch (error) {
       console.error('Error loading messages:', error)
