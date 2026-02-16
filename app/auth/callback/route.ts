@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
+import { cookies } from 'next/headers'
 import { NextResponse } from 'next/server'
 
 export async function GET(request: Request) {
@@ -7,7 +8,7 @@ export async function GET(request: Request) {
   const next = searchParams.get('next') ?? '/channels'
 
   if (code) {
-    const supabase = await createClient()
+    const supabase = createClient(cookies())
     const { error } = await supabase.auth.exchangeCodeForSession(code)
     if (!error) {
       const url = request.headers.get('origin') + next
