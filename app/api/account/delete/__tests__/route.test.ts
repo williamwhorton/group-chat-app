@@ -6,6 +6,9 @@ import { createClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
 
 jest.mock('@/lib/supabase/server')
+jest.mock('next/headers', () => ({
+  cookies: jest.fn(),
+}))
 jest.mock('next/server', () => ({
   NextResponse: {
     json: jest.fn((data, init) => ({
@@ -26,7 +29,7 @@ describe('DELETE account API route', () => {
 
   beforeEach(() => {
     jest.clearAllMocks()
-    ;(createClient as jest.Mock).mockResolvedValue(mockSupabase)
+    ;(createClient as jest.Mock).mockReturnValue(mockSupabase)
   })
 
   it('returns 401 if user is not authenticated', async () => {

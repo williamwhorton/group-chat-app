@@ -77,7 +77,11 @@ pnpm format:fix
    NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
    ```
 
-4. Create the database schema in Supabase by running the SQL from `scripts/001_create_schema.sql`
+4. Create the database schema in Supabase by running the SQL scripts in order:
+   - `scripts/001_create_schema.sql`
+   - `scripts/002_create_rls_policies.sql`
+   - `scripts/003_create_channel_invitations.sql`
+   - `scripts/004_invitation_rpcs.sql`
 
 5. Run the development server:
 
@@ -109,6 +113,7 @@ The application uses the following Supabase tables:
 - **channels**: Chat channels with creator information
 - **channel_members**: Membership tracking
 - **messages**: Chat messages with timestamps
+- **channel_invitations**: Email-based invitations for private channels
 
 All tables have Row Level Security enabled to protect user data.
 
@@ -159,7 +164,12 @@ app/
 │   └── page.tsx
 └── api/                      # API routes
     ├── account/delete/route.ts
-    └── channels/route.ts
+    ├── channels/route.ts
+    ├── channels/[id]/invitations/route.ts
+    └── invitations/[token]/
+        ├── route.ts
+        ├── accept/route.ts
+        └── revoke/route.ts
 
 components/
 ├── navigation.tsx
