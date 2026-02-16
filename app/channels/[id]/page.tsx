@@ -58,9 +58,16 @@ export default function ChatPage() {
         }
       }
       await loadMessages()
-      subscribeToMessages()
     }
     init()
+    
+    const unsubscribe = subscribeToMessages()
+    
+    return () => {
+      if (unsubscribe) {
+        unsubscribe()
+      }
+    }
   }, [channelId])
 
   const getCurrentUser = async () => {
