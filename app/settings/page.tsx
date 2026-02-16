@@ -63,7 +63,7 @@ export default function SettingsPage() {
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
-      <div className="container py-8">
+      <div className="container px-4 py-8">
         <h1 className="mb-8 text-3xl font-bold tracking-tight">Settings</h1>
 
         <div className="max-w-2xl space-y-6">
