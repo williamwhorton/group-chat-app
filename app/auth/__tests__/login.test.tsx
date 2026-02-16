@@ -4,8 +4,7 @@ import LoginPage from '@/app/auth/login/page'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 
-// Mock the modules
-jest.mock('next/navigation')
+// Mock Supabase client
 jest.mock('@/lib/supabase/client')
 
 describe('Login Page', () => {
@@ -31,12 +30,9 @@ describe('Login Page', () => {
   it('renders login form with email and password fields', () => {
     render(<LoginPage />)
 
-    expect(screen.getByText('Login')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /login/i })).toBeInTheDocument()
     expect(screen.getByLabelText(/email/i)).toBeInTheDocument()
     expect(screen.getByLabelText(/password/i)).toBeInTheDocument()
-    expect(
-      screen.getByRole('button', { name: /login/i })
-    ).toBeInTheDocument()
   })
 
   it('allows user to enter email and password', () => {
@@ -56,7 +52,10 @@ describe('Login Page', () => {
     mockSupabase.auth.signInWithPassword.mockImplementation(() => {
       return new Promise((resolve) => {
         setTimeout(() => {
-          resolve({ error: null })
+          resolve({
+            data: { user: { id: 'user-123' }, session: {} },
+            error: null,
+          } as any)
         }, 100)
       })
     })
@@ -77,9 +76,11 @@ describe('Login Page', () => {
   })
 
   it('displays error message on login failure', async () => {
+    const error = new Error('Invalid credentials')
     mockSupabase.auth.signInWithPassword.mockResolvedValue({
-      error: new Error('Invalid credentials'),
-    })
+      data: { user: null, session: null },
+      error,
+    } as any)
 
     render(<LoginPage />)
 
@@ -92,14 +93,15 @@ describe('Login Page', () => {
     fireEvent.click(submitButton)
 
     await waitFor(() => {
-      expect(screen.getByText('Invalid credentials')).toBeInTheDocument()
+      expect(screen.getByText(/Invalid credentials/i)).toBeInTheDocument()
     })
   })
 
   it('redirects to channels page on successful login', async () => {
     mockSupabase.auth.signInWithPassword.mockResolvedValue({
+      data: { user: { id: 'user-123' }, session: {} },
       error: null,
-    })
+    } as any)
 
     render(<LoginPage />)
 

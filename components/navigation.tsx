@@ -15,7 +15,9 @@ export default function Navigation() {
   useEffect(() => {
     const getUser = async () => {
       const supabase = createClient()
-      const { data: { user } } = await supabase.auth.getUser()
+      const {
+        data: { user },
+      } = await supabase.auth.getUser()
       setUser(user)
     }
 
@@ -34,35 +36,28 @@ export default function Navigation() {
   const isSettingsPage = pathname.startsWith('/settings')
 
   return (
-    <nav className="border-b bg-white sticky top-0 z-50">
-      <div className="container flex items-center justify-between h-16 px-4">
-        <Link href="/channels" className="flex items-center gap-2 font-bold text-lg">
+    <nav className="sticky top-0 z-50 border-b bg-white">
+      <div className="container flex h-16 items-center justify-between px-4">
+        <Link
+          href="/channels"
+          className="flex items-center gap-2 text-lg font-bold"
+        >
           <MessageCircle className="h-5 w-5" />
           GroupChat
         </Link>
 
         <div className="flex items-center gap-2">
           <Link href="/channels">
-            <Button
-              variant={isChannelsPage ? 'default' : 'ghost'}
-              size="sm"
-            >
+            <Button variant={isChannelsPage ? 'default' : 'ghost'} size="sm">
               Channels
             </Button>
           </Link>
           <Link href="/settings">
-            <Button
-              variant={isSettingsPage ? 'default' : 'ghost'}
-              size="sm"
-            >
+            <Button variant={isSettingsPage ? 'default' : 'ghost'} size="sm">
               <Settings className="h-4 w-4" />
             </Button>
           </Link>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={handleLogout}
-          >
+          <Button variant="ghost" size="sm" onClick={handleLogout}>
             <LogOut className="h-4 w-4" />
           </Button>
         </div>

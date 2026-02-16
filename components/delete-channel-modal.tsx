@@ -55,10 +55,11 @@ export default function DeleteChannelModal({
         <AlertDialogHeader>
           <AlertDialogTitle>Delete Channel?</AlertDialogTitle>
           <AlertDialogDescription>
-            This action cannot be undone. All messages in this channel will be permanently deleted.
+            This action cannot be undone. All messages in this channel will be
+            permanently deleted.
           </AlertDialogDescription>
         </AlertDialogHeader>
-        <div className="flex gap-2 justify-end">
+        <div className="flex justify-end gap-2">
           <AlertDialogCancel disabled={loading}>Cancel</AlertDialogCancel>
           <AlertDialogAction
             onClick={handleDelete}

@@ -4,8 +4,7 @@ import ChannelsPage from '@/app/channels/page'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 
-// Mock the modules
-jest.mock('next/navigation')
+// Mock Supabase client
 jest.mock('@/lib/supabase/client')
 jest.mock('@/components/navigation', () => {
   return function MockNavigation() {
@@ -80,12 +79,10 @@ describe('Channels Page', () => {
 
     mockSupabase.from.mockReturnValue({
       select: jest.fn().mockReturnValue({
-        eq: jest
-          .fn()
-          .mockResolvedValue({
-            data: mockChannels.map((c) => ({ channels: c })),
-            error: null,
-          }),
+        eq: jest.fn().mockResolvedValue({
+          data: mockChannels.map((c) => ({ channels: c })),
+          error: null,
+        }),
       }),
     })
 
@@ -190,12 +187,10 @@ describe('Channels Page', () => {
 
     mockSupabase.from.mockReturnValue({
       select: jest.fn().mockReturnValue({
-        eq: jest
-          .fn()
-          .mockResolvedValue({
-            data: mockChannels.map((c) => ({ channels: c })),
-            error: null,
-          }),
+        eq: jest.fn().mockResolvedValue({
+          data: mockChannels.map((c) => ({ channels: c })),
+          error: null,
+        }),
       }),
     })
 
@@ -205,5 +200,42 @@ describe('Channels Page', () => {
       const channelLink = screen.getByRole('link', { name: /general/i })
       expect(channelLink).toHaveAttribute('href', '/channels/channel-1')
     })
+  })
+
+  it('handles auth check error', async () => {
+    const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {})
+    mockSupabase.auth.getUser.mockRejectedValue(new Error('Auth failed'))
+
+    render(<ChannelsPage />)
+
+    await waitFor(() => {
+      expect(mockPush).toHaveBeenCalledWith('/auth/login')
+      expect(consoleSpy).toHaveBeenCalled()
+    })
+    consoleSpy.mockRestore()
+  })
+
+  it('handles channels loading error', async () => {
+    const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {})
+    mockSupabase.auth.getUser.mockResolvedValue({
+      data: { user: { id: 'user-123' } },
+    })
+
+    mockSupabase.from.mockReturnValue({
+      select: jest.fn().mockReturnValue({
+        eq: jest.fn().mockResolvedValue({
+          data: null,
+          error: { message: 'Load failed' },
+        }),
+      }),
+    })
+
+    render(<ChannelsPage />)
+
+    await waitFor(() => {
+      expect(consoleSpy).toHaveBeenCalled()
+      expect(screen.queryByText('general')).not.toBeInTheDocument()
+    })
+    consoleSpy.mockRestore()
   })
 })

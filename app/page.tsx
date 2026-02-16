@@ -14,7 +14,9 @@ export default function Page() {
   useEffect(() => {
     const checkAuth = async () => {
       const supabase = createClient()
-      const { data: { user } } = await supabase.auth.getUser()
+      const {
+        data: { user },
+      } = await supabase.auth.getUser()
       if (user) {
         setIsLoggedIn(true)
         router.push('/channels')
@@ -31,8 +33,8 @@ export default function Page() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background to-muted flex items-center justify-center p-4">
-      <div className="max-w-md text-center space-y-8">
+    <div className="flex min-h-screen items-center justify-center bg-gradient-to-b from-background to-muted p-4">
+      <div className="max-w-md space-y-8 text-center">
         <div className="space-y-4">
           <h1 className="text-4xl font-bold tracking-tight">Group Chat</h1>
           <p className="text-lg text-muted-foreground">
@@ -53,7 +55,7 @@ export default function Page() {
           </Link>
         </div>
 
-        <div className="pt-8 space-y-3 text-sm text-muted-foreground">
+        <div className="space-y-3 pt-8 text-sm text-muted-foreground">
           <p>✓ Create and join channels</p>
           <p>✓ Real-time messaging</p>
           <p>✓ Invite friends to chat</p>

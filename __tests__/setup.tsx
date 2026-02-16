@@ -2,9 +2,9 @@ import React from 'react'
 import { render as rtlRender, RenderOptions } from '@testing-library/react'
 import { ReactElement } from 'react'
 
-// Mock Supabase client
-jest.mock('@supabase/supabase-js', () => ({
-  createClient: jest.fn(() => ({
+// Mock Supabase SSR
+jest.mock('@supabase/ssr', () => ({
+  createBrowserClient: jest.fn(() => ({
     auth: {
       signInWithPassword: jest.fn(),
       signUp: jest.fn(),
@@ -18,6 +18,7 @@ jest.mock('@supabase/supabase-js', () => ({
       update: jest.fn().mockReturnThis(),
       delete: jest.fn().mockReturnThis(),
       eq: jest.fn().mockReturnThis(),
+      single: jest.fn().mockReturnThis(),
       data: [],
       error: null,
     })),
@@ -26,14 +27,17 @@ jest.mock('@supabase/supabase-js', () => ({
 
 // Mock Next.js router
 jest.mock('next/navigation', () => ({
-  useRouter: () => ({
+  useRouter: jest.fn(() => ({
     push: jest.fn(),
-    pathname: '/',
-    query: {},
-    asPath: '/',
-  }),
-  usePathname: () => '/',
-  useSearchParams: () => new URLSearchParams(),
+    back: jest.fn(),
+    forward: jest.fn(),
+    refresh: jest.fn(),
+    replace: jest.fn(),
+    prefetch: jest.fn(),
+  })),
+  useParams: jest.fn(() => ({})),
+  usePathname: jest.fn(() => '/'),
+  useSearchParams: jest.fn(() => new URLSearchParams()),
 }))
 
 // Custom render function that includes providers

@@ -5,7 +5,13 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
 import { Plus } from 'lucide-react'
 import CreateChannelModal from '@/components/create-channel-modal'
 import Navigation from '@/components/navigation'
@@ -32,7 +38,9 @@ export default function ChannelsPage() {
 
   const checkAuthAndLoad = async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser()
+      const {
+        data: { user },
+      } = await supabase.auth.getUser()
       if (!user) {
         router.push('/auth/login')
         return
@@ -47,7 +55,9 @@ export default function ChannelsPage() {
 
   const loadChannels = async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser()
+      const {
+        data: { user },
+      } = await supabase.auth.getUser()
       if (!user) return
 
       // Get channels the user is a member of
@@ -58,7 +68,8 @@ export default function ChannelsPage() {
 
       if (error) throw error
 
-      const channelsList = data?.map((item: any) => item.channels).filter(Boolean) || []
+      const channelsList =
+        data?.map((item: any) => item.channels).filter(Boolean) || []
       setChannels(channelsList)
     } catch (error) {
       console.error('Error loading channels:', error)
@@ -79,10 +90,12 @@ export default function ChannelsPage() {
     <div className="min-h-screen bg-background">
       <Navigation />
       <div className="container py-8">
-        <div className="flex items-center justify-between mb-8">
+        <div className="mb-8 flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold tracking-tight">Channels</h1>
-            <p className="text-muted-foreground mt-2">Join or create a channel to start chatting</p>
+            <p className="mt-2 text-muted-foreground">
+              Join or create a channel to start chatting
+            </p>
           </div>
           <Button onClick={() => setShowCreateModal(true)}>
             <Plus className="mr-2 h-4 w-4" />
@@ -91,9 +104,11 @@ export default function ChannelsPage() {
         </div>
 
         {channels.length === 0 ? (
-          <Card className="text-center py-12">
+          <Card className="py-12 text-center">
             <CardContent>
-              <p className="text-muted-foreground mb-4">No channels yet. Create one to get started!</p>
+              <p className="mb-4 text-muted-foreground">
+                No channels yet. Create one to get started!
+              </p>
               <Button onClick={() => setShowCreateModal(true)}>
                 <Plus className="mr-2 h-4 w-4" />
                 Create Channel
@@ -104,11 +119,15 @@ export default function ChannelsPage() {
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {channels.map((channel) => (
               <Link key={channel.id} href={`/channels/${channel.id}`}>
-                <Card className="hover:shadow-md transition-shadow cursor-pointer h-full">
+                <Card className="h-full cursor-pointer transition-shadow hover:shadow-md">
                   <CardHeader>
-                    <CardTitle className="line-clamp-2">{channel.name}</CardTitle>
+                    <CardTitle className="line-clamp-2">
+                      {channel.name}
+                    </CardTitle>
                     {channel.description && (
-                      <CardDescription className="line-clamp-2">{channel.description}</CardDescription>
+                      <CardDescription className="line-clamp-2">
+                        {channel.description}
+                      </CardDescription>
                     )}
                   </CardHeader>
                 </Card>

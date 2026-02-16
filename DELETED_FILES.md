@@ -14,6 +14,7 @@ Authentication is now handled entirely client-side within page components (`/app
 ## Supabase Setup
 
 The project uses only `@supabase/supabase-js` directly:
+
 - `lib/supabase/client.ts` - Browser client
 - `lib/supabase/server.ts` - Server client
 

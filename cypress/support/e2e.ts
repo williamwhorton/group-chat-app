@@ -11,27 +11,25 @@ Cypress.Commands.add('loginAs', (email: string, password: string) => {
 })
 
 // Create channel command
-Cypress.Commands.add(
-  'createChannel',
-  (name: string, description?: string) => {
-    cy.get('button').contains(/new channel|create channel/i).click()
-    cy.get('input[id="name"]').type(name)
-    if (description) {
-      cy.get('textarea[id="description"]').type(description)
-    }
-    cy.get('button').contains(/create channel/i).click()
+Cypress.Commands.add('createChannel', (name: string, description?: string) => {
+  cy.get('button')
+    .contains(/new channel|create channel/i)
+    .click()
+  cy.get('input[id="name"]').type(name)
+  if (description) {
+    cy.get('textarea[id="description"]').type(description)
   }
-)
+  cy.get('button')
+    .contains(/create channel/i)
+    .click()
+})
 
 // Declare custom commands for TypeScript
 declare global {
   namespace Cypress {
     interface Chainable {
       loginAs(email: string, password: string): Chainable<void>
-      createChannel(
-        name: string,
-        description?: string
-      ): Chainable<void>
+      createChannel(name: string, description?: string): Chainable<void>
     }
   }
 }

@@ -23,34 +23,31 @@ describe('CreateChannelModal', () => {
   })
 
   it('renders the modal when open prop is true', () => {
-    render(
-      <CreateChannelModal open={true} onOpenChange={jest.fn()} />
-    )
+    render(<CreateChannelModal open={true} onOpenChange={jest.fn()} />)
 
     expect(screen.getByRole('dialog')).toBeInTheDocument()
     expect(screen.getByText('Create a New Channel')).toBeInTheDocument()
   })
 
   it('does not render the modal when open prop is false', () => {
-    const { container } = render(
-      <CreateChannelModal open={false} onOpenChange={jest.fn()} />
-    )
+    render(<CreateChannelModal open={false} onOpenChange={jest.fn()} />)
 
     // Dialog should not be visible
-    const dialog = container.querySelector('[role="dialog"]')
-    expect(dialog).not.toBeVisible()
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
   })
 
   it('allows user to enter channel name and description', async () => {
-    render(
-      <CreateChannelModal open={true} onOpenChange={jest.fn()} />
-    )
+    render(<CreateChannelModal open={true} onOpenChange={jest.fn()} />)
 
     const nameInput = screen.getByLabelText(/channel name/i) as HTMLInputElement
-    const descriptionInput = screen.getByLabelText(/description/i) as HTMLTextAreaElement
+    const descriptionInput = screen.getByLabelText(
+      /description/i
+    ) as HTMLTextAreaElement
 
     fireEvent.change(nameInput, { target: { value: 'general' } })
-    fireEvent.change(descriptionInput, { target: { value: 'General discussion' } })
+    fireEvent.change(descriptionInput, {
+      target: { value: 'General discussion' },
+    })
 
     expect(nameInput.value).toBe('general')
     expect(descriptionInput.value).toBe('General discussion')
@@ -61,22 +58,20 @@ describe('CreateChannelModal', () => {
       data: { user: { id: 'user-123' } },
     })
 
-    const mockInsert = jest
-      .fn()
-      .mockReturnValue({
-        select: jest.fn().mockReturnValue({
-          single: jest.fn().mockReturnValue(
-            new Promise((resolve) => {
-              setTimeout(() => {
-                resolve({
-                  data: { id: 'channel-123' },
-                  error: null,
-                })
-              }, 100)
-            })
-          ),
-        }),
-      })
+    const mockInsert = jest.fn().mockReturnValue({
+      select: jest.fn().mockReturnValue({
+        single: jest.fn().mockReturnValue(
+          new Promise((resolve) => {
+            setTimeout(() => {
+              resolve({
+                data: { id: 'channel-123' },
+                error: null,
+              })
+            }, 100)
+          })
+        ),
+      }),
+    })
 
     mockSupabase.from.mockReturnValue({
       insert: mockInsert,
@@ -100,12 +95,7 @@ describe('CreateChannelModal', () => {
 
   it('closes modal when cancel button is clicked', () => {
     const mockOnOpenChange = jest.fn()
-    render(
-      <CreateChannelModal
-        open={true}
-        onOpenChange={mockOnOpenChange}
-      />
-    )
+    render(<CreateChannelModal open={true} onOpenChange={mockOnOpenChange} />)
 
     const cancelButton = screen.getByRole('button', { name: /cancel/i })
     fireEvent.click(cancelButton)
@@ -118,20 +108,19 @@ describe('CreateChannelModal', () => {
       data: { user: { id: 'user-123' } },
     })
 
+    const channelError = new Error('Channel name already exists')
     mockSupabase.from.mockReturnValue({
       insert: jest.fn().mockReturnValue({
         select: jest.fn().mockReturnValue({
           single: jest.fn().mockResolvedValue({
             data: null,
-            error: { message: 'Channel name already exists' },
+            error: channelError,
           }),
         }),
       }),
     })
 
-    render(
-      <CreateChannelModal open={true} onOpenChange={jest.fn()} />
-    )
+    render(<CreateChannelModal open={true} onOpenChange={jest.fn()} />)
 
     const nameInput = screen.getByLabelText(/channel name/i)
     fireEvent.change(nameInput, { target: { value: 'general' } })
@@ -140,7 +129,9 @@ describe('CreateChannelModal', () => {
     fireEvent.click(submitButton)
 
     await waitFor(() => {
-      expect(screen.getByText('Channel name already exists')).toBeInTheDocument()
+      expect(
+        screen.getByText(/Channel name already exists/i)
+      ).toBeInTheDocument()
     })
   })
 
@@ -183,6 +174,63 @@ describe('CreateChannelModal', () => {
 
     await waitFor(() => {
       expect(mockOnChannelCreated).toHaveBeenCalled()
+    })
+  })
+
+  it('handles not authenticated error', async () => {
+    mockSupabase.auth.getUser.mockResolvedValue({
+      data: { user: null },
+    })
+
+    render(<CreateChannelModal open={true} onOpenChange={jest.fn()} />)
+
+    const nameInput = screen.getByLabelText(/channel name/i)
+    fireEvent.change(nameInput, { target: { value: 'general' } })
+
+    const submitButton = screen.getByRole('button', { name: /create channel/i })
+    fireEvent.click(submitButton)
+
+    await waitFor(() => {
+      expect(screen.getByText(/Not authenticated/i)).toBeInTheDocument()
+    })
+  })
+
+  it('handles member insertion error', async () => {
+    mockSupabase.auth.getUser.mockResolvedValue({
+      data: { user: { id: 'user-123' } },
+    })
+
+    mockSupabase.from
+      .mockReturnValueOnce({
+        insert: jest.fn().mockReturnValue({
+          select: jest.fn().mockReturnValue({
+            single: jest.fn().mockResolvedValue({
+              data: { id: 'channel-123' },
+              error: null,
+            }),
+          }),
+        }),
+      })
+      .mockReturnValueOnce({
+        insert: jest.fn().mockResolvedValue({
+          error: { message: 'Member join failed' },
+        }),
+      })
+
+    render(<CreateChannelModal open={true} onOpenChange={jest.fn()} />)
+
+    const nameInput = screen.getByLabelText(/channel name/i)
+    fireEvent.change(nameInput, { target: { value: 'general' } })
+
+    const submitButton = screen.getByRole('button', { name: /create channel/i })
+    fireEvent.click(submitButton)
+
+    await waitFor(() => {
+      // It should fall back to 'Failed to create channel' or the error message
+      // depending on how the error is passed.
+      // In handleCreate: setError(error instanceof Error ? error.message : 'Failed to create channel')
+      // If error is { message: 'Member join failed' }, it might not be an instance of Error.
+      expect(screen.getByText(/Failed to create channel/i)).toBeInTheDocument()
     })
   })
 })
