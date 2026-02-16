@@ -257,7 +257,7 @@ export default function ChatPage() {
       <Navigation />
       {/* Header */}
       <div className="sticky top-16 z-10 border-b bg-white p-4">
-        <div className="container flex items-center justify-between px-4">
+        <div className="flex items-center justify-between px-4">
           <div className="flex-1">
             <h1 className="text-2xl font-bold">{channel.name}</h1>
             {channel.description && (
