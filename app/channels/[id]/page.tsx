@@ -292,7 +292,7 @@ export default function ChatPage() {
 
       {/* Messages */}
       <div className="flex-1 overflow-y-auto p-4">
-        <div className="container max-w-4xl space-y-3 px-4">
+        <div className="container mx-auto max-w-4xl space-y-3 px-4">
           {messages.length === 0 ? (
             <div className="flex h-full items-center justify-center text-muted-foreground">
               <p>No messages yet. Start the conversation!</p>
