@@ -90,29 +90,29 @@ export default function ChannelsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/30">
       <Navigation />
       <div className="container py-8">
         <div className="mb-8 flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">Channels</h1>
-            <p className="mt-2 text-muted-foreground">
+            <h1 className="font-display text-3xl font-bold tracking-tight">Channels</h1>
+            <p className="mt-2 leading-relaxed text-muted-foreground">
               Join or create a channel to start chatting
             </p>
           </div>
-          <Button onClick={() => setShowCreateModal(true)}>
+          <Button onClick={() => setShowCreateModal(true)} className="shadow-lg shadow-primary/20">
             <Plus className="mr-2 h-4 w-4" />
             New Channel
           </Button>
         </div>
 
         {channels.length === 0 ? (
-          <Card className="py-12 text-center">
+          <Card className="border-2 py-12 text-center shadow-lg">
             <CardContent>
               <p className="mb-4 text-muted-foreground">
                 No channels yet. Create one to get started!
               </p>
-              <Button onClick={() => setShowCreateModal(true)}>
+              <Button onClick={() => setShowCreateModal(true)} className="shadow-md shadow-primary/20">
                 <Plus className="mr-2 h-4 w-4" />
                 Create Channel
               </Button>
@@ -122,13 +122,13 @@ export default function ChannelsPage() {
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {channels.map((channel) => (
               <Link key={channel.id} href={`/channels/${channel.id}`}>
-                <Card className="h-full cursor-pointer transition-shadow hover:shadow-md">
+                <Card className="h-full cursor-pointer border-2 transition-all hover:scale-[1.02] hover:shadow-xl hover:shadow-primary/10">
                   <CardHeader>
-                    <CardTitle className="line-clamp-2">
+                    <CardTitle className="line-clamp-2 font-display">
                       {channel.name}
                     </CardTitle>
                     {channel.description && (
-                      <CardDescription className="line-clamp-2">
+                      <CardDescription className="line-clamp-2 leading-relaxed">
                         {channel.description}
                       </CardDescription>
                     )}
