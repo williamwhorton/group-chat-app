@@ -1,4 +1,4 @@
-# Treehouse Group Chat Application
+# Treehouse Group Chat
 
 A real-time group chat application built with Next.js, React, Supabase, and Tailwind CSS.
 
