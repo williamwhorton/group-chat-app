@@ -125,14 +125,45 @@ export default function ChatPage() {
 
   const loadMessages = async () => {
     try {
-      const { data, error } = await supabase
+      // Fetch messages
+      const { data: messagesData, error: messagesError } = await supabase
         .from('messages')
-        .select('*, profiles(username)')
+        .select('*')
         .eq('channel_id', channelId)
         .order('created_at', { ascending: true })
 
-      if (error) throw error
-      setMessages(data || [])
+      if (messagesError) throw messagesError
+
+      if (!messagesData || messagesData.length === 0) {
+        setMessages([])
+        return
+      }
+
+      // Get unique user IDs from messages
+      const userIds = [...new Set(messagesData.map(msg => msg.user_id))]
+
+      // Fetch profiles for all users
+      const { data: profilesData, error: profilesError } = await supabase
+        .from('profiles')
+        .select('id, username')
+        .in('id', userIds)
+
+      if (profilesError) throw profilesError
+
+      // Create a map of user_id to profile
+      const profilesMap = new Map(
+        (profilesData || []).map(profile => [profile.id, profile])
+      )
+
+      // Combine messages with profiles
+      const messagesWithProfiles = messagesData.map(msg => ({
+        ...msg,
+        profiles: profilesMap.get(msg.user_id) 
+          ? { username: profilesMap.get(msg.user_id)!.username }
+          : undefined
+      }))
+
+      setMessages(messagesWithProfiles)
     } catch (error) {
       console.error('Error loading messages:', error)
     } finally {
@@ -153,14 +184,27 @@ export default function ChatPage() {
         },
         async (payload) => {
           if (payload.eventType === 'INSERT') {
+            // Fetch the new message
             const { data: newMessage } = await supabase
               .from('messages')
-              .select('*, profiles(username)')
+              .select('*')
               .eq('id', payload.new.id)
               .single()
 
             if (newMessage) {
-              setMessages((prev) => [...prev, newMessage])
+              // Fetch the profile for the message author
+              const { data: profile } = await supabase
+                .from('profiles')
+                .select('username')
+                .eq('id', newMessage.user_id)
+                .single()
+
+              const messageWithProfile = {
+                ...newMessage,
+                profiles: profile ? { username: profile.username } : undefined
+              }
+
+              setMessages((prev) => [...prev, messageWithProfile])
             }
           }
         }
