@@ -47,10 +47,14 @@ export default function ChatPage() {
   const supabase = createClient()
 
   useEffect(() => {
-    loadChannel()
-    loadMessages()
-    subscribeToMessages()
-    getCurrentUser()
+    const init = async () => {
+      await getCurrentUser()
+      await ensureUserIsMember()
+      await loadChannel()
+      await loadMessages()
+      subscribeToMessages()
+    }
+    init()
   }, [channelId])
 
   const getCurrentUser = async () => {
@@ -58,6 +62,45 @@ export default function ChatPage() {
       data: { user },
     } = await supabase.auth.getUser()
     setCurrentUser(user)
+    return user
+  }
+
+  const ensureUserIsMember = async () => {
+    try {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser()
+      if (!user) return
+
+      console.log('[v0] Ensuring user is member of channel:', channelId)
+      
+      // Check if already a member
+      const { data: existingMember } = await supabase
+        .from('channel_members')
+        .select('*')
+        .eq('channel_id', channelId)
+        .eq('user_id', user.id)
+        .single()
+
+      if (!existingMember) {
+        console.log('[v0] Adding user to channel members')
+        // Add user as member
+        const { error } = await supabase.from('channel_members').insert({
+          channel_id: channelId,
+          user_id: user.id,
+        })
+
+        if (error) {
+          console.error('[v0] Error adding user to channel:', error)
+        } else {
+          console.log('[v0] User added to channel successfully')
+        }
+      } else {
+        console.log('[v0] User is already a member')
+      }
+    } catch (error) {
+      console.error('[v0] Error in ensureUserIsMember:', error)
+    }
   }
 
   const loadChannel = async () => {
