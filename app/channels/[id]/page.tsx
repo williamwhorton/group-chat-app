@@ -3,7 +3,7 @@
 export const dynamic = 'force-dynamic'
 export const runtime = 'edge'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
@@ -36,6 +36,7 @@ export default function ChatPage() {
   const params = useParams()
   const router = useRouter()
   const channelId = params.id as string
+  const messagesEndRef = useRef<HTMLDivElement>(null)
 
   const [channel, setChannel] = useState<Channel | null>(null)
   const [messages, setMessages] = useState<Message[]>([])
@@ -46,6 +47,11 @@ export default function ChatPage() {
   const [showDeleteModal, setShowDeleteModal] = useState(false)
 
   const supabase = createClient()
+
+  // Scroll to bottom whenever messages change
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+  }, [messages])
 
   useEffect(() => {
     const init = async () => {
@@ -432,6 +438,7 @@ export default function ChatPage() {
               )
             })
           )}
+          <div ref={messagesEndRef} />
         </div>
       </div>
 
