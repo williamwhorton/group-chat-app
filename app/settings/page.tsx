@@ -77,11 +77,48 @@ export default function SettingsPage() {
   const handleSaveProfile = async () => {
     if (!user) return
 
+    // Trim whitespace from username
+    const trimmedUsername = username.trim()
+
+    // Validate username
+    if (!trimmedUsername) {
+      toast({
+        title: 'Error',
+        description: 'Username cannot be empty.',
+        variant: 'destructive',
+      })
+      return
+    }
+
     setSaving(true)
     try {
+      // Check if username is already taken by another user
+      const { data: existingProfile, error: checkError } = await supabase
+        .from('profiles')
+        .select('id, username')
+        .eq('username', trimmedUsername)
+        .single()
+
+      if (checkError && checkError.code !== 'PGRST116') {
+        // PGRST116 is "no rows returned" which is what we want
+        throw checkError
+      }
+
+      // If a profile exists with this username and it's not the current user
+      if (existingProfile && existingProfile.id !== user.id) {
+        toast({
+          title: 'Error',
+          description: 'This username is already taken. Please choose another.',
+          variant: 'destructive',
+        })
+        setSaving(false)
+        return
+      }
+
+      // Update the profile
       const { error } = await supabase
         .from('profiles')
-        .update({ username })
+        .update({ username: trimmedUsername })
         .eq('id', user.id)
 
       if (error) {
@@ -94,7 +131,8 @@ export default function SettingsPage() {
       })
 
       // Update local profile state
-      setProfile((prev) => prev ? { ...prev, username } : null)
+      setProfile((prev) => prev ? { ...prev, username: trimmedUsername } : null)
+      setUsername(trimmedUsername)
     } catch (error) {
       console.error('Error updating profile:', error)
       toast({
