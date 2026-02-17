@@ -249,7 +249,7 @@ export default function ChatPage() {
     e.preventDefault()
     if (!messageInput.trim() || !currentUser) return
 
-    const tempId = `temp-${Date.now()}`
+    const tempId = `temp-${Date.now()}-${Math.random()}`
     const optimisticMessage: Message = {
       id: tempId,
       content: messageInput,
@@ -282,20 +282,12 @@ export default function ChatPage() {
       
       console.log('[v0] Message inserted successfully:', data)
       
-      // Update the optimistic message with the real ID from the server
-      // The websocket subscription will handle removing the pending flag
-      if (data && data.length > 0) {
-        const realMessage = data[0]
-        setMessages((prev) => {
-          const updated = prev.map(m => 
-            m.id === tempId 
-              ? { ...realMessage, profiles: m.profiles, pending: true }
-              : m
-          )
-          console.log('[v0] Updated optimistic message with real ID:', realMessage.id)
-          return updated
-        })
-      }
+      // The websocket will add the confirmed message, so remove the optimistic one
+      // We wait a bit to let the websocket event arrive first
+      setTimeout(() => {
+        setMessages((prev) => prev.filter(m => m.id !== tempId))
+        console.log('[v0] Removed optimistic message:', tempId)
+      }, 500)
     } catch (error) {
       console.error('[v0] Error sending message:', error)
     }
