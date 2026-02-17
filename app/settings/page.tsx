@@ -14,14 +14,27 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
-import { LogOut, Trash2 } from 'lucide-react'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { LogOut, Trash2, Save } from 'lucide-react'
+import { useToast } from '@/hooks/use-toast'
 import DeleteAccountModal from '@/components/delete-account-modal'
 import Navigation from '@/components/navigation'
 
+interface Profile {
+  id: string
+  username: string | null
+  created_at: string
+}
+
 export default function SettingsPage() {
   const router = useRouter()
+  const { toast } = useToast()
   const [user, setUser] = useState<any>(null)
+  const [profile, setProfile] = useState<Profile | null>(null)
+  const [username, setUsername] = useState('')
   const [loading, setLoading] = useState(true)
+  const [saving, setSaving] = useState(false)
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   const supabase = createClient()
 
@@ -36,6 +49,20 @@ export default function SettingsPage() {
           return
         }
         setUser(user)
+
+        // Load profile data
+        const { data: profileData, error: profileError } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', user.id)
+          .single()
+
+        if (profileError) {
+          console.error('Error loading profile:', profileError)
+        } else {
+          setProfile(profileData)
+          setUsername(profileData?.username || '')
+        }
       } catch (error) {
         console.error('Auth error:', error)
         router.push('/auth/login')
@@ -46,6 +73,39 @@ export default function SettingsPage() {
 
     getCurrentUser()
   }, [])
+
+  const handleSaveProfile = async () => {
+    if (!user) return
+
+    setSaving(true)
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .update({ username })
+        .eq('id', user.id)
+
+      if (error) {
+        throw error
+      }
+
+      toast({
+        title: 'Success',
+        description: 'Your profile has been updated.',
+      })
+
+      // Update local profile state
+      setProfile((prev) => prev ? { ...prev, username } : null)
+    } catch (error) {
+      console.error('Error updating profile:', error)
+      toast({
+        title: 'Error',
+        description: 'Failed to update profile. Please try again.',
+        variant: 'destructive',
+      })
+    } finally {
+      setSaving(false)
+    }
+  }
 
   const handleLogout = async () => {
     await supabase.auth.signOut()
@@ -67,6 +127,29 @@ export default function SettingsPage() {
         <h1 className="mb-8 text-3xl font-bold tracking-tight">Settings</h1>
 
         <div className="max-w-2xl space-y-6">
+          {/* Profile Settings */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Profile</CardTitle>
+              <CardDescription>Update your profile information</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="username">Username</Label>
+                <Input
+                  id="username"
+                  placeholder="Enter your username"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                />
+              </div>
+              <Button onClick={handleSaveProfile} disabled={saving}>
+                <Save className="mr-2 h-4 w-4" />
+                {saving ? 'Saving...' : 'Save Changes'}
+              </Button>
+            </CardContent>
+          </Card>
+
           {/* Account Info */}
           <Card>
             <CardHeader>
