@@ -225,9 +225,11 @@ export default function ChatPage() {
                 // Remove pending flag from existing message
                 const updated = [...prev]
                 updated[existingIndex] = { ...updated[existingIndex], pending: false }
+                console.log('[v0] Updated pending message:', updated[existingIndex])
                 return updated
               }
               // Message doesn't exist yet, add it without pending flag
+              console.log('[v0] Added new message from subscription:', messageWithProfile)
               return [...prev, messageWithProfile]
             })
           }
@@ -240,59 +242,71 @@ export default function ChatPage() {
     // Fallback: Poll for new messages every 3 seconds as a safety net
     const pollInterval = setInterval(async () => {
       console.log('[v0] Polling for messages...')
-      const lastMessage = messages[messages.length - 1]
-      const lastCreatedAt = lastMessage?.created_at || new Date(0).toISOString()
+      
+      // Get current messages from state to find the last message
+      setMessages((currentMessages) => {
+        // Use currentMessages from the state update callback to avoid stale closure
+        const lastMessage = currentMessages[currentMessages.length - 1]
+        const lastCreatedAt = lastMessage?.created_at || new Date(0).toISOString()
 
-      const { data: newMessages, error } = await supabase
-        .from('messages')
-        .select('*')
-        .eq('channel_id', channelId)
-        .gt('created_at', lastCreatedAt)
-        .order('created_at', { ascending: true })
+        // Create an async function to fetch and update
+        ;(async () => {
+          const { data: newMessages, error } = await supabase
+            .from('messages')
+            .select('*')
+            .eq('channel_id', channelId)
+            .gt('created_at', lastCreatedAt)
+            .order('created_at', { ascending: true })
 
-      if (error) {
-        console.error('[v0] Error polling messages:', error)
-        return
-      }
-
-      if (newMessages && newMessages.length > 0) {
-        console.log('[v0] Polling found new messages:', newMessages)
-
-        // Fetch profiles for new messages
-        const userIds = [...new Set(newMessages.map(msg => msg.user_id))]
-        const { data: profilesData } = await supabase
-          .from('profiles')
-          .select('id, username')
-          .in('id', userIds)
-
-        const profilesMap = new Map(
-          (profilesData || []).map(profile => [profile.id, profile])
-        )
-
-        const messagesWithProfiles = newMessages.map(msg => ({
-          ...msg,
-          profiles: profilesMap.get(msg.user_id)
-            ? { username: profilesMap.get(msg.user_id)!.username }
-            : undefined
-        }))
-
-        setMessages((prev) => {
-          const updated = [...prev]
-          
-          for (const newMsg of messagesWithProfiles) {
-            const existingIndex = updated.findIndex(m => m.id === newMsg.id)
-            if (existingIndex >= 0) {
-              // Message exists, remove pending flag
-              updated[existingIndex] = { ...updated[existingIndex], pending: false }
-            } else {
-              // New message from polling
-              updated.push(newMsg)
-            }
+          if (error) {
+            console.error('[v0] Error polling messages:', error)
+            return
           }
-          
-          return updated
-        })
-      }
+
+          if (newMessages && newMessages.length > 0) {
+            console.log('[v0] Polling found new messages:', newMessages)
+
+            // Fetch profiles for new messages
+            const userIds = [...new Set(newMessages.map(msg => msg.user_id))]
+            const { data: profilesData } = await supabase
+              .from('profiles')
+              .select('id, username')
+              .in('id', userIds)
+
+            const profilesMap = new Map(
+              (profilesData || []).map(profile => [profile.id, profile])
+            )
+
+            const messagesWithProfiles = newMessages.map(msg => ({
+              ...msg,
+              profiles: profilesMap.get(msg.user_id)
+                ? { username: profilesMap.get(msg.user_id)!.username }
+                : undefined
+            }))
+
+            setMessages((prev) => {
+              const updated = [...prev]
+              
+              for (const newMsg of messagesWithProfiles) {
+                const existingIndex = updated.findIndex(m => m.id === newMsg.id)
+                if (existingIndex >= 0) {
+                  // Message exists, remove pending flag
+                  updated[existingIndex] = { ...updated[existingIndex], pending: false }
+                  console.log('[v0] Updated existing message from poll:', updated[existingIndex])
+                } else {
+                  // New message from polling
+                  updated.push(newMsg)
+                  console.log('[v0] Added new message from poll:', newMsg)
+                }
+              }
+              
+              return updated
+            })
+          }
+        })()
+
+        return currentMessages
+      })
     }, 3000)
 
     return () => {
