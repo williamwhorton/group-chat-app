@@ -332,15 +332,16 @@ export default function ChatPage() {
 
     // Add message optimistically
     setMessages((prev) => [...prev, optimisticMessage])
+    const messageCopy = messageInput
     setMessageInput('')
 
     console.log('[v0] Sending message optimistically:', optimisticMessage)
     try {
+      // Don't pass id - let database generate UUID
       const { data, error } = await supabase.from('messages').insert({
-        id: tempId,
         channel_id: channelId,
         user_id: currentUser.id,
-        content: optimisticMessage.content,
+        content: messageCopy,
       }).select()
 
       if (error) {
@@ -351,7 +352,20 @@ export default function ChatPage() {
       }
       
       console.log('[v0] Message inserted successfully:', data)
-      // The subscription will update the pending flag
+      
+      // Replace the optimistic message with the real one from the server
+      if (data && data.length > 0) {
+        const realMessage = data[0]
+        setMessages((prev) => {
+          const updated = prev.map(m => 
+            m.id === tempId 
+              ? { ...realMessage, profiles: m.profiles, pending: false }
+              : m
+          )
+          console.log('[v0] Replaced optimistic message with real message')
+          return updated
+        })
+      }
     } catch (error) {
       console.error('[v0] Error sending message:', error)
     }
