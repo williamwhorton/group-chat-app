@@ -217,19 +217,34 @@ export default function ChatPage() {
               profiles: profile ? { username: profile.username } : undefined
             }
 
-            console.log('[v0] Confirming message:', messageWithProfile.id)
+            console.log('[v0] Processing message:', messageWithProfile.id, 'User:', newMessage.user_id)
             setMessages((prev) => {
-              // Check if this message already exists as a pending message
-              const existingIndex = prev.findIndex(m => m.id === messageWithProfile.id)
-              if (existingIndex >= 0) {
-                // Remove pending flag from existing message
+              console.log('[v0] Current messages count:', prev.length)
+              
+              // Check if this exact message already exists (by ID)
+              const existingById = prev.find(m => m.id === messageWithProfile.id)
+              if (existingById) {
+                console.log('[v0] Message already exists with same ID, skipping')
+                return prev
+              }
+              
+              // Look for a pending message from the same user with the same content
+              const pendingIndex = prev.findIndex(m => 
+                m.pending && 
+                m.user_id === messageWithProfile.user_id && 
+                m.content === messageWithProfile.content
+              )
+              
+              if (pendingIndex >= 0) {
+                // Replace the pending message with the confirmed one
                 const updated = [...prev]
-                updated[existingIndex] = { ...updated[existingIndex], pending: false }
-                console.log('[v0] Updated pending message:', updated[existingIndex])
+                updated[pendingIndex] = messageWithProfile
+                console.log('[v0] Replaced pending message at index:', pendingIndex)
                 return updated
               }
-              // Message doesn't exist yet, add it without pending flag
-              console.log('[v0] Added new message from subscription:', messageWithProfile)
+              
+              // No pending message found, add the new message
+              console.log('[v0] Adding new message from subscription')
               return [...prev, messageWithProfile]
             })
           }
@@ -281,13 +296,7 @@ export default function ChatPage() {
       }
       
       console.log('[v0] Message inserted successfully:', data)
-      
-      // The websocket will add the confirmed message, so remove the optimistic one
-      // We wait a bit to let the websocket event arrive first
-      setTimeout(() => {
-        setMessages((prev) => prev.filter(m => m.id !== tempId))
-        console.log('[v0] Removed optimistic message:', tempId)
-      }, 500)
+      // The websocket subscription will receive the INSERT event and replace the pending message
     } catch (error) {
       console.error('[v0] Error sending message:', error)
     }
