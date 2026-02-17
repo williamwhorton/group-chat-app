@@ -282,16 +282,17 @@ export default function ChatPage() {
       
       console.log('[v0] Message inserted successfully:', data)
       
-      // Replace the optimistic message with the real one from the server
+      // Update the optimistic message with the real ID from the server
+      // The websocket subscription will handle removing the pending flag
       if (data && data.length > 0) {
         const realMessage = data[0]
         setMessages((prev) => {
           const updated = prev.map(m => 
             m.id === tempId 
-              ? { ...realMessage, profiles: m.profiles, pending: false }
+              ? { ...realMessage, profiles: m.profiles, pending: true }
               : m
           )
-          console.log('[v0] Replaced optimistic message with real message')
+          console.log('[v0] Updated optimistic message with real ID:', realMessage.id)
           return updated
         })
       }
