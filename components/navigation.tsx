@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { useRouter, usePathname } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
-import { MessageCircle, Settings, LogOut } from 'lucide-react'
+import { MessageCircle, Settings, LogOut, User } from 'lucide-react'
 import { useEffect, useState } from 'react'
 
 export default function Navigation() {
@@ -33,6 +33,7 @@ export default function Navigation() {
   if (!user) return null
 
   const isChannelsPage = pathname.startsWith('/channels')
+  const isProfilePage = pathname.startsWith('/profile')
   const isSettingsPage = pathname.startsWith('/settings')
 
   return (
@@ -50,6 +51,11 @@ export default function Navigation() {
           <Link href="/channels">
             <Button variant={isChannelsPage ? 'default' : 'ghost'} size="sm" className={isChannelsPage ? 'shadow-md shadow-primary/20' : ''}>
               Channels
+            </Button>
+          </Link>
+          <Link href="/profile">
+            <Button variant={isProfilePage ? 'default' : 'ghost'} size="sm" className={isProfilePage ? 'shadow-md shadow-primary/20' : ''}>
+              <User className="h-4 w-4" />
             </Button>
           </Link>
           <Link href="/settings">

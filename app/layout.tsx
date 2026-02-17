@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { DM_Sans, Space_Grotesk } from 'next/font/google'
+import { Toaster } from '@/components/ui/toaster'
 
 import './globals.css'
 
@@ -28,7 +29,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${dmSans.variable} ${spaceGrotesk.variable} font-sans antialiased`}>{children}</body>
+      <body className={`${dmSans.variable} ${spaceGrotesk.variable} font-sans antialiased`}>
+        {children}
+        <Toaster />
+      </body>
     </html>
   )
 }
