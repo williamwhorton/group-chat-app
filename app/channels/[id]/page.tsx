@@ -70,13 +70,16 @@ export default function ChatPage() {
   }, [channelId])
 
   useEffect(() => {
+    // Only subscribe after we have messages loaded and current user
+    if (!currentUser || loading) return
+    
     const unsubscribe = subscribeToMessages()
     return () => {
       if (unsubscribe) {
         unsubscribe()
       }
     }
-  }, [channelId])
+  }, [channelId, currentUser, loading])
 
   const getCurrentUser = async () => {
     const {
@@ -187,11 +190,11 @@ export default function ChatPage() {
   }
 
   const subscribeToMessages = () => {
-    console.log('[v0] Setting up subscription for channel:', channelId)
+    console.log('[v0] Setting up subscription for channel:', channelId, 'User:', currentUser?.id)
     
     // Set up realtime subscription
     const subscription = supabase
-      .channel(`messages:${channelId}`)
+      .channel(`channel_messages_${channelId}`)
       .on(
         'postgres_changes',
         {
@@ -201,7 +204,7 @@ export default function ChatPage() {
           filter: `channel_id=eq.${channelId}`,
         },
         async (payload) => {
-          console.log('[v0] Received INSERT event:', payload)
+          console.log('[v0] Received INSERT event for message:', payload.new.id, 'from user:', payload.new.user_id, 'My ID:', currentUser?.id)
           const newMessage = payload.new as Message
 
           if (newMessage) {
@@ -217,18 +220,17 @@ export default function ChatPage() {
               profiles: profile ? { username: profile.username } : undefined
             }
 
-            console.log('[v0] Processing message:', messageWithProfile.id, 'User:', newMessage.user_id)
             setMessages((prev) => {
-              console.log('[v0] Current messages count:', prev.length)
+              console.log('[v0] Current message IDs:', prev.map(m => ({ id: m.id, pending: m.pending, content: m.content.slice(0, 20) })))
               
               // Check if this exact message already exists (by ID)
-              const existingById = prev.find(m => m.id === messageWithProfile.id)
+              const existingById = prev.find(m => m.id === messageWithProfile.id && !m.pending)
               if (existingById) {
-                console.log('[v0] Message already exists with same ID, skipping')
+                console.log('[v0] Non-pending message with same ID already exists, skipping')
                 return prev
               }
               
-              // Look for a pending message from the same user with the same content
+              // Look for ANY pending message with the same content and user
               const pendingIndex = prev.findIndex(m => 
                 m.pending && 
                 m.user_id === messageWithProfile.user_id && 
@@ -239,19 +241,22 @@ export default function ChatPage() {
                 // Replace the pending message with the confirmed one
                 const updated = [...prev]
                 updated[pendingIndex] = messageWithProfile
-                console.log('[v0] Replaced pending message at index:', pendingIndex)
+                console.log('[v0] Replaced pending message with real message:', messageWithProfile.id)
                 return updated
               }
               
               // No pending message found, add the new message
-              console.log('[v0] Adding new message from subscription')
+              console.log('[v0] Adding new message from websocket:', messageWithProfile.id)
               return [...prev, messageWithProfile]
             })
           }
         }
       )
-      .subscribe((status) => {
-        console.log('[v0] Subscription status changed to:', status)
+      .subscribe((status, err) => {
+        console.log('[v0] Subscription status:', status, err ? 'Error:' + err : '')
+        if (status === 'SUBSCRIBED') {
+          console.log('[v0] Successfully subscribed to messages for channel:', channelId)
+        }
       })
 
     return () => {
