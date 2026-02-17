@@ -16,8 +16,8 @@ const spaceGrotesk = Space_Grotesk({
 })
 
 export const metadata: Metadata = {
-  title: 'Treehouse',
-  description: 'Real-time group chat with channels',
+  title: 'Treehouse - Team Chat That Brings Everyone Together',
+  description: 'Connect your team with powerful channels, instant messaging, and seamless collaboration. Real-time group chat made simple.',
   generator: 'v0.app',
 }
 
