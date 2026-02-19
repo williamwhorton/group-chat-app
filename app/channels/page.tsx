@@ -95,12 +95,17 @@ export default function ChannelsPage() {
       <div className="container px-4 py-8">
         <div className="mb-8 flex w-full items-center justify-between px-0">
           <div>
-            <h1 className="font-display text-3xl font-bold tracking-tight">Channels</h1>
+            <h1 className="font-display text-3xl font-bold tracking-tight">
+              Channels
+            </h1>
             <p className="mt-2 leading-relaxed text-muted-foreground">
               Join or create a channel to start chatting
             </p>
           </div>
-          <Button onClick={() => setShowCreateModal(true)} className="shadow-lg shadow-primary/20">
+          <Button
+            onClick={() => setShowCreateModal(true)}
+            className="shadow-lg shadow-primary/20"
+          >
             <Plus className="mr-2 h-4 w-4" />
             New Channel
           </Button>
@@ -112,7 +117,10 @@ export default function ChannelsPage() {
               <p className="mb-4 text-muted-foreground">
                 No channels yet. Create one to get started!
               </p>
-              <Button onClick={() => setShowCreateModal(true)} className="shadow-md shadow-primary/20">
+              <Button
+                onClick={() => setShowCreateModal(true)}
+                className="shadow-md shadow-primary/20"
+              >
                 <Plus className="mr-2 h-4 w-4" />
                 Create Channel
               </Button>

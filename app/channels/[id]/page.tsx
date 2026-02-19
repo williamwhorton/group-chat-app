@@ -72,7 +72,7 @@ export default function ChatPage() {
   useEffect(() => {
     // Only subscribe after we have messages loaded and current user
     if (!currentUser || loading) return
-    
+
     const unsubscribe = subscribeToMessages()
     return () => {
       if (unsubscribe) {
@@ -146,42 +146,13 @@ export default function ChatPage() {
       // Fetch messages
       const { data: messagesData, error: messagesError } = await supabase
         .from('messages')
-        .select('*')
+        .select('*, profiles(username)')
         .eq('channel_id', channelId)
         .order('created_at', { ascending: true })
 
       if (messagesError) throw messagesError
 
-      if (!messagesData || messagesData.length === 0) {
-        setMessages([])
-        return
-      }
-
-      // Get unique user IDs from messages
-      const userIds = [...new Set(messagesData.map(msg => msg.user_id))]
-
-      // Fetch profiles for all users
-      const { data: profilesData, error: profilesError } = await supabase
-        .from('profiles')
-        .select('id, username')
-        .in('id', userIds)
-
-      if (profilesError) throw profilesError
-
-      // Create a map of user_id to profile
-      const profilesMap = new Map(
-        (profilesData || []).map(profile => [profile.id, profile])
-      )
-
-      // Combine messages with profiles
-      const messagesWithProfiles = messagesData.map(msg => ({
-        ...msg,
-        profiles: profilesMap.get(msg.user_id) 
-          ? { username: profilesMap.get(msg.user_id)!.username }
-          : undefined
-      }))
-
-      setMessages(messagesWithProfiles)
+      setMessages(messagesData || [])
     } catch (error) {
       console.error('Error loading messages:', error)
     } finally {
@@ -190,8 +161,13 @@ export default function ChatPage() {
   }
 
   const subscribeToMessages = () => {
-    console.log('[v0] Setting up subscription for channel:', channelId, 'User:', currentUser?.id)
-    
+    console.log(
+      '[v0] Setting up subscription for channel:',
+      channelId,
+      'User:',
+      currentUser?.id
+    )
+
     // Set up realtime subscription
     const subscription = supabase
       .channel(`channel_messages_${channelId}`)
@@ -204,7 +180,14 @@ export default function ChatPage() {
           filter: `channel_id=eq.${channelId}`,
         },
         async (payload) => {
-          console.log('[v0] Received INSERT event for message:', payload.new.id, 'from user:', payload.new.user_id, 'My ID:', currentUser?.id)
+          console.log(
+            '[v0] Received INSERT event for message:',
+            payload.new.id,
+            'from user:',
+            payload.new.user_id,
+            'My ID:',
+            currentUser?.id
+          )
           const newMessage = payload.new as Message
 
           if (newMessage) {
@@ -217,45 +200,70 @@ export default function ChatPage() {
 
             const messageWithProfile: Message = {
               ...newMessage,
-              profiles: profile ? { username: profile.username } : undefined
+              profiles: profile ? { username: profile.username } : undefined,
             }
 
             setMessages((prev) => {
-              console.log('[v0] Current message IDs:', prev.map(m => ({ id: m.id, pending: m.pending, content: m.content.slice(0, 20) })))
-              
+              console.log(
+                '[v0] Current message IDs:',
+                prev.map((m) => ({
+                  id: m.id,
+                  pending: m.pending,
+                  content: m.content.slice(0, 20),
+                }))
+              )
+
               // Check if this exact message already exists (by ID)
-              const existingById = prev.find(m => m.id === messageWithProfile.id && !m.pending)
+              const existingById = prev.find(
+                (m) => m.id === messageWithProfile.id && !m.pending
+              )
               if (existingById) {
-                console.log('[v0] Non-pending message with same ID already exists, skipping')
+                console.log(
+                  '[v0] Non-pending message with same ID already exists, skipping'
+                )
                 return prev
               }
-              
+
               // Look for ANY pending message with the same content and user
-              const pendingIndex = prev.findIndex(m => 
-                m.pending && 
-                m.user_id === messageWithProfile.user_id && 
-                m.content === messageWithProfile.content
+              const pendingIndex = prev.findIndex(
+                (m) =>
+                  m.pending &&
+                  m.user_id === messageWithProfile.user_id &&
+                  m.content === messageWithProfile.content
               )
-              
+
               if (pendingIndex >= 0) {
                 // Replace the pending message with the confirmed one
                 const updated = [...prev]
                 updated[pendingIndex] = messageWithProfile
-                console.log('[v0] Replaced pending message with real message:', messageWithProfile.id)
+                console.log(
+                  '[v0] Replaced pending message with real message:',
+                  messageWithProfile.id
+                )
                 return updated
               }
-              
+
               // No pending message found, add the new message
-              console.log('[v0] Adding new message from websocket:', messageWithProfile.id)
+              console.log(
+                '[v0] Adding new message from websocket:',
+                messageWithProfile.id
+              )
               return [...prev, messageWithProfile]
             })
           }
         }
       )
       .subscribe((status, err) => {
-        console.log('[v0] Subscription status:', status, err ? 'Error:' + err : '')
+        console.log(
+          '[v0] Subscription status:',
+          status,
+          err ? 'Error:' + err : ''
+        )
         if (status === 'SUBSCRIBED') {
-          console.log('[v0] Successfully subscribed to messages for channel:', channelId)
+          console.log(
+            '[v0] Successfully subscribed to messages for channel:',
+            channelId
+          )
         }
       })
 
@@ -276,7 +284,7 @@ export default function ChatPage() {
       user_id: currentUser.id,
       created_at: new Date().toISOString(),
       profiles: { username: currentUser.user_metadata?.username || 'You' },
-      pending: true
+      pending: true,
     }
 
     // Add message optimistically
@@ -287,19 +295,22 @@ export default function ChatPage() {
     console.log('[v0] Sending message optimistically:', optimisticMessage)
     try {
       // Don't pass id - let database generate UUID
-      const { data, error } = await supabase.from('messages').insert({
-        channel_id: channelId,
-        user_id: currentUser.id,
-        content: messageCopy,
-      }).select()
+      const { data, error } = await supabase
+        .from('messages')
+        .insert({
+          channel_id: channelId,
+          user_id: currentUser.id,
+          content: messageCopy,
+        })
+        .select()
 
       if (error) {
         console.error('[v0] Error sending message:', error)
         // Remove the optimistic message on error
-        setMessages((prev) => prev.filter(m => m.id !== tempId))
+        setMessages((prev) => prev.filter((m) => m.id !== tempId))
         throw error
       }
-      
+
       console.log('[v0] Message inserted successfully:', data)
       // The websocket subscription will receive the INSERT event and replace the pending message
     } catch (error) {
@@ -378,20 +389,24 @@ export default function ChatPage() {
                   key={message.id}
                   className={`flex ${isCurrentUser ? 'justify-start' : 'justify-end'}`}
                 >
-                  <div className={`max-w-[75%] rounded-lg p-3 shadow-md sm:max-w-md transition-opacity ${
-                    message.pending 
-                      ? 'bg-primary/5 opacity-60' 
-                      : isCurrentUser 
-                        ? 'bg-primary/10' 
-                        : 'bg-card'
-                  }`}>
+                  <div
+                    className={`max-w-[75%] rounded-lg p-3 shadow-md transition-opacity sm:max-w-md ${
+                      message.pending
+                        ? 'bg-primary/5 opacity-60'
+                        : isCurrentUser
+                          ? 'bg-primary/10'
+                          : 'bg-card'
+                    }`}
+                  >
                     <div className="flex items-baseline gap-2">
                       <span className="text-sm font-semibold">
                         {message.profiles?.username ||
                           `User ${message.user_id.slice(0, 8)}`}
                       </span>
                       <span className="text-xs text-muted-foreground">
-                        {message.pending ? 'Sending...' : new Date(message.created_at).toLocaleTimeString()}
+                        {message.pending
+                          ? 'Sending...'
+                          : new Date(message.created_at).toLocaleTimeString()}
                       </span>
                     </div>
                     <p className="mt-1 text-sm leading-relaxed text-foreground">

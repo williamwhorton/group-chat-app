@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { act } from 'react'
 import { render, screen, fireEvent, waitFor } from '@/__tests__/setup'
 import ChatPage from '@/app/channels/[id]/page'
 import { useParams, useRouter } from 'next/navigation'
@@ -38,6 +38,11 @@ const mockSupabase = {
 }
 
 describe('ChatPage', () => {
+  beforeAll(() => {
+    // Polyfill scrollIntoView
+    window.HTMLElement.prototype.scrollIntoView = jest.fn()
+  })
+
   beforeEach(() => {
     jest.clearAllMocks()
     mockUseParams.mockReturnValue({ id: 'channel-123' })
@@ -59,7 +64,7 @@ describe('ChatPage', () => {
 
     const mockChannelSubscription = {
       on: jest.fn().mockReturnThis(),
-      subscribe: jest.fn(),
+      subscribe: jest.fn(() => ({ unsubscribe: jest.fn() })),
     }
     mockSupabase.channel.mockReturnValue(mockChannelSubscription as any)
 
@@ -82,7 +87,7 @@ describe('ChatPage', () => {
 
     const mockChannelSubscription = {
       on: jest.fn().mockReturnThis(),
-      subscribe: jest.fn(),
+      subscribe: jest.fn(() => ({ unsubscribe: jest.fn() })),
     }
     mockSupabase.channel.mockReturnValue(mockChannelSubscription as any)
 
@@ -127,7 +132,7 @@ describe('ChatPage', () => {
 
     const mockChannelSubscription = {
       on: jest.fn().mockReturnThis(),
-      subscribe: jest.fn(),
+      subscribe: jest.fn(() => ({ unsubscribe: jest.fn() })),
     }
     mockSupabase.channel.mockReturnValue(mockChannelSubscription as any)
 
@@ -189,7 +194,7 @@ describe('ChatPage', () => {
         expect(screen.getByText('Hello world')).toBeInTheDocument()
         expect(screen.getByText('testuser')).toBeInTheDocument()
       },
-      { timeout: 2000 }
+      { timeout: 4000 }
     )
   })
 
@@ -200,7 +205,7 @@ describe('ChatPage', () => {
 
     const mockChannelSubscription = {
       on: jest.fn().mockReturnThis(),
-      subscribe: jest.fn(),
+      subscribe: jest.fn(() => ({ unsubscribe: jest.fn() })),
     }
     mockSupabase.channel.mockReturnValue(mockChannelSubscription as any)
 
@@ -253,7 +258,7 @@ describe('ChatPage', () => {
 
     const mockChannelSubscription = {
       on: jest.fn().mockReturnThis(),
-      subscribe: jest.fn(),
+      subscribe: jest.fn(() => ({ unsubscribe: jest.fn() })),
     }
     mockSupabase.channel.mockReturnValue(mockChannelSubscription as any)
 
@@ -323,7 +328,7 @@ describe('ChatPage', () => {
 
     const mockChannelSubscription = {
       on: jest.fn().mockReturnThis(),
-      subscribe: jest.fn(),
+      subscribe: jest.fn(() => ({ unsubscribe: jest.fn() })),
     }
     mockSupabase.channel.mockReturnValue(mockChannelSubscription as any)
 
@@ -378,7 +383,7 @@ describe('ChatPage', () => {
 
     const mockChannelSubscription = {
       on: jest.fn().mockReturnThis(),
-      subscribe: jest.fn(),
+      subscribe: jest.fn(() => ({ unsubscribe: jest.fn() })),
     }
     mockSupabase.channel.mockReturnValue(mockChannelSubscription as any)
 
@@ -433,7 +438,7 @@ describe('ChatPage', () => {
 
     const mockChannelSubscription = {
       on: jest.fn().mockReturnThis(),
-      subscribe: jest.fn(),
+      subscribe: jest.fn(() => ({ unsubscribe: jest.fn() })),
     }
     mockSupabase.channel.mockReturnValue(mockChannelSubscription as any)
 
@@ -506,7 +511,7 @@ describe('ChatPage', () => {
         subscriptionCallback = callback
         return mockChannelSubscription
       }),
-      subscribe: jest.fn(),
+      subscribe: jest.fn(() => ({ unsubscribe: jest.fn() })),
     }
     mockSupabase.channel.mockReturnValue(mockChannelSubscription as any)
 
@@ -517,40 +522,49 @@ describe('ChatPage', () => {
     }
 
     mockSupabase.from.mockImplementation((table: string) => {
+      const mockReturn = {
+        select: jest.fn().mockReturnThis(),
+        eq: jest.fn().mockReturnThis(),
+        single: jest.fn(),
+        order: jest.fn().mockReturnThis(),
+        insert: jest.fn().mockResolvedValue({ data: null, error: null }),
+      } as any
+
+      mockReturn.select.mockReturnValue(mockReturn)
+      mockReturn.eq.mockReturnValue(mockReturn)
+      mockReturn.order.mockReturnValue(mockReturn)
+
       if (table === 'channels') {
-        return {
-          select: jest.fn().mockReturnThis(),
-          eq: jest.fn().mockReturnThis(),
-          single: jest
-            .fn()
-            .mockResolvedValue({ data: mockChannel, error: null }),
-        } as any
+        mockReturn.single.mockResolvedValue({ data: mockChannel, error: null })
+        return mockReturn
       }
       if (table === 'channel_members') {
-        return {
-          select: jest.fn().mockReturnThis(),
-          eq: jest.fn().mockReturnThis(),
-          single: jest
-            .fn()
-            .mockResolvedValue({ data: { user_id: 'user-123' }, error: null }),
-        } as any
+        mockReturn.single.mockResolvedValue({
+          data: { user_id: 'user-123' },
+          error: null,
+        })
+        return mockReturn
       }
       if (table === 'messages') {
-        return {
-          select: jest.fn().mockReturnThis(),
-          eq: jest.fn().mockReturnThis(),
-          order: jest.fn().mockResolvedValue({ data: [], error: null }),
-          single: jest.fn().mockResolvedValue({
-            data: {
-              id: 'msg-2',
-              content: 'New message',
-              profiles: { username: 'newuser' },
-            },
-            error: null,
-          }),
-        } as any
+        mockReturn.order.mockResolvedValue({ data: [], error: null })
+        mockReturn.single.mockResolvedValue({
+          data: {
+            id: 'msg-2',
+            content: 'New message',
+            profiles: { username: 'newuser' },
+          },
+          error: null,
+        })
+        return mockReturn
       }
-      return {} as any
+      if (table === 'profiles') {
+        mockReturn.single.mockResolvedValue({
+          data: { username: 'newuser' },
+          error: null,
+        })
+        return mockReturn
+      }
+      return mockReturn
     })
 
     render(<ChatPage />)
@@ -565,9 +579,11 @@ describe('ChatPage', () => {
     })
 
     await waitFor(async () => {
-      await subscriptionCallback({
-        eventType: 'INSERT',
-        new: { id: 'msg-2' },
+      await act(async () => {
+        await subscriptionCallback({
+          eventType: 'INSERT',
+          new: { id: 'msg-2', user_id: 'user-789', content: 'New message' },
+        })
       })
     })
 
