@@ -15,15 +15,18 @@ Additional labels for pre-release and build metadata are available as extensions
 ## Release Lifecycle
 
 ### 0.x.y (Initial Development)
+
 - The project is currently in initial development.
 - The API is not yet stable.
 - Anything may change at any time.
 
 ### 1.0.0 (Public Release)
+
 - Once the application is ready for production and feature-complete, it will be released as `1.0.0`.
 - This version defines the first stable public API.
 
 ## Pre-release Versions
+
 Pre-release versions may be denoted by appending a hyphen and a series of dot-separated identifiers immediately following the patch version (e.g., `1.0.0-alpha.1`, `1.0.0-rc.1`).
 
 ## Versioning Decisions for Group Chat App
