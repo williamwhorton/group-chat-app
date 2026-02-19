@@ -44,9 +44,9 @@ describe('HomePage', () => {
     render(<HomePage />)
 
     await waitFor(() => {
-      expect(screen.getByText('Treehouse')).toBeInTheDocument()
+      expect(screen.getAllByText('Treehouse')[0]).toBeInTheDocument()
       expect(
-        screen.getByText(/create channels and chat in real-time/i)
+        screen.getByText(/team chat that brings everyone together/i)
       ).toBeInTheDocument()
     })
   })
@@ -60,7 +60,7 @@ describe('HomePage', () => {
 
     await waitFor(() => {
       const getStartedButton = screen.getByRole('link', {
-        name: /get started/i,
+        name: /get started for free/i,
       })
       expect(getStartedButton).toHaveAttribute('href', '/auth/sign-up')
     })
@@ -74,7 +74,7 @@ describe('HomePage', () => {
     render(<HomePage />)
 
     await waitFor(() => {
-      const loginButton = screen.getByRole('link', { name: /login/i })
+      const loginButton = screen.getByRole('link', { name: /log in/i })
       expect(loginButton).toHaveAttribute('href', '/auth/login')
     })
   })
@@ -87,9 +87,9 @@ describe('HomePage', () => {
     render(<HomePage />)
 
     await waitFor(() => {
-      expect(screen.getByText(/create and join channels/i)).toBeInTheDocument()
+      expect(screen.getByText(/organized conversations/i)).toBeInTheDocument()
       expect(screen.getByText(/real-time messaging/i)).toBeInTheDocument()
-      expect(screen.getByText(/invite friends to chat/i)).toBeInTheDocument()
+      expect(screen.getByText(/team invitations/i)).toBeInTheDocument()
     })
   })
 

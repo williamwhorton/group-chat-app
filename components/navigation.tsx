@@ -49,21 +49,38 @@ export default function Navigation() {
 
         <div className="flex items-center gap-2">
           <Link href="/channels">
-            <Button variant={isChannelsPage ? 'default' : 'ghost'} size="sm" className={isChannelsPage ? 'shadow-md shadow-primary/20' : ''}>
+            <Button
+              variant={isChannelsPage ? 'default' : 'ghost'}
+              size="sm"
+              className={isChannelsPage ? 'shadow-md shadow-primary/20' : ''}
+            >
               Channels
             </Button>
           </Link>
-          <Link href="/profile">
-            <Button variant={isProfilePage ? 'default' : 'ghost'} size="sm" className={isProfilePage ? 'shadow-md shadow-primary/20' : ''}>
+          <Link href="/profile" aria-label="Profile">
+            <Button
+              variant={isProfilePage ? 'default' : 'ghost'}
+              size="sm"
+              className={isProfilePage ? 'shadow-md shadow-primary/20' : ''}
+            >
               <User className="h-4 w-4" />
             </Button>
           </Link>
-          <Link href="/settings">
-            <Button variant={isSettingsPage ? 'default' : 'ghost'} size="sm" className={isSettingsPage ? 'shadow-md shadow-primary/20' : ''}>
+          <Link href="/settings" aria-label="Settings">
+            <Button
+              variant={isSettingsPage ? 'default' : 'ghost'}
+              size="sm"
+              className={isSettingsPage ? 'shadow-md shadow-primary/20' : ''}
+            >
               <Settings className="h-4 w-4" />
             </Button>
           </Link>
-          <Button variant="ghost" size="sm" onClick={handleLogout} className="hover:text-destructive">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleLogout}
+            className="hover:text-destructive"
+          >
             <LogOut className="h-4 w-4" />
           </Button>
         </div>

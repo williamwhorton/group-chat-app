@@ -119,7 +119,7 @@ describe('Navigation', () => {
 
     await waitFor(() => {
       // Find the link wrapping the settings button
-      const settingsLink = screen.getByRole('link', { name: '' })
+      const settingsLink = screen.getByRole('link', { name: /settings/i })
       expect(settingsLink).toHaveAttribute('href', '/settings')
     })
   })

@@ -9,8 +9,8 @@ NC='\033[0m' # No Color
 echo "${YELLOW}Running pre-commit checks...${NC}"
 
 # Run Prettier check
-echo "${YELLOW}Checking code formatting with Prettier...${NC}"
-npm run format
+echo "${YELLOW}Fixing code formatting with Prettier...${NC}"
+npm run format:fix
 
 if [ $? -ne 0 ]; then
   echo "${RED}❌ Formatting errors detected. Run 'npm run format:fix' to fix them. Commit aborted.${NC}"
@@ -56,10 +56,6 @@ if (( $(echo "$COVERAGE < $THRESHOLD" | bc -l) )); then
   echo "${RED}❌ Coverage is ${COVERAGE}%, below the ${THRESHOLD}% threshold. Commit aborted.${NC}"
   exit 1
 fi
-
-# Run Prettier
-echo "${YELLOW}Running Prettier and fixing formatting...${NC}"
-npm run format:fix
 
 echo "${GREEN}✅ All pre-commit checks passed!${NC}"
 exit 0

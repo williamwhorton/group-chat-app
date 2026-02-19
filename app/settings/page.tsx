@@ -131,7 +131,9 @@ export default function SettingsPage() {
       })
 
       // Update local profile state
-      setProfile((prev) => prev ? { ...prev, username: trimmedUsername } : null)
+      setProfile((prev) =>
+        prev ? { ...prev, username: trimmedUsername } : null
+      )
       setUsername(trimmedUsername)
     } catch (error) {
       console.error('Error updating profile:', error)
@@ -152,10 +154,17 @@ export default function SettingsPage() {
 
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center">
-        <p className="text-lg text-muted-foreground">Loading...</p>
+      <div
+        className="flex min-h-screen items-center justify-center"
+        data-testid="settings-loading"
+      >
+        <p className="text-lg text-muted-foreground">Loading settings...</p>
       </div>
     )
+  }
+
+  if (!user) {
+    return null
   }
 
   return (

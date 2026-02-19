@@ -92,9 +92,12 @@ export default function ProfilePage() {
           console.error('Error loading member channels:', memberError)
         } else {
           // Filter out channels where user is the creator to avoid duplication
-          const membersList = memberData
-            ?.map((item: any) => item.channels)
-            .filter((channel: Channel) => channel && channel.creator_id !== user.id) || []
+          const membersList =
+            memberData
+              ?.map((item: any) => item.channels)
+              .filter(
+                (channel: Channel) => channel && channel.creator_id !== user.id
+              ) || []
           setMemberChannels(membersList)
         }
       } catch (error) {
@@ -195,11 +198,11 @@ export default function ProfilePage() {
             <CardHeader>
               <div className="flex items-center gap-2">
                 <Hash className="h-5 w-5 text-primary" />
-                <CardTitle className="font-display">Channels I Created</CardTitle>
+                <CardTitle className="font-display">
+                  Channels I Created
+                </CardTitle>
               </div>
-              <CardDescription>
-                Channels you own and manage
-              </CardDescription>
+              <CardDescription>Channels you own and manage</CardDescription>
             </CardHeader>
             <CardContent>
               {createdChannels.length === 0 ? (
@@ -247,11 +250,11 @@ export default function ProfilePage() {
             <CardHeader>
               <div className="flex items-center gap-2">
                 <User className="h-5 w-5 text-primary" />
-                <CardTitle className="font-display">Channels I Joined</CardTitle>
+                <CardTitle className="font-display">
+                  Channels I Joined
+                </CardTitle>
               </div>
-              <CardDescription>
-                Channels where you're a member
-              </CardDescription>
+              <CardDescription>Channels where you're a member</CardDescription>
             </CardHeader>
             <CardContent>
               {memberChannels.length === 0 ? (

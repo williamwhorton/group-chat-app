@@ -4,13 +4,13 @@ import { Toaster } from '@/components/ui/toaster'
 
 import './globals.css'
 
-const dmSans = DM_Sans({ 
+const dmSans = DM_Sans({
   subsets: ['latin'],
   variable: '--font-dm-sans',
   display: 'swap',
 })
 
-const spaceGrotesk = Space_Grotesk({ 
+const spaceGrotesk = Space_Grotesk({
   subsets: ['latin'],
   variable: '--font-space-grotesk',
   display: 'swap',
@@ -18,7 +18,8 @@ const spaceGrotesk = Space_Grotesk({
 
 export const metadata: Metadata = {
   title: 'Treehouse - Team Chat That Brings Everyone Together',
-  description: 'Connect your team with powerful channels, instant messaging, and seamless collaboration. Real-time group chat made simple.',
+  description:
+    'Connect your team with powerful channels, instant messaging, and seamless collaboration. Real-time group chat made simple.',
   generator: 'v0.app',
 }
 
@@ -29,7 +30,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${dmSans.variable} ${spaceGrotesk.variable} font-sans antialiased`}>
+      <body
+        className={`${dmSans.variable} ${spaceGrotesk.variable} font-sans antialiased`}
+      >
         {children}
         <Toaster />
       </body>
