@@ -42,6 +42,11 @@ export default function Page() {
             <span className="text-xl font-bold tracking-tight">Treehouse</span>
           </div>
           <div className="flex items-center gap-3">
+            <Link href="/pricing">
+              <Button variant="ghost" size="sm">
+                Pricing
+              </Button>
+            </Link>
             <Link href="/auth/login">
               <Button variant="ghost" size="sm">
                 Log in
