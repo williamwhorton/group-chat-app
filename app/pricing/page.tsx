@@ -48,7 +48,7 @@ export default function PricingPage() {
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
-      
+
       <div className="container px-4 py-16 md:py-24">
         {/* Header Section */}
         <div className="mx-auto mb-16 max-w-3xl text-center">
@@ -56,7 +56,8 @@ export default function PricingPage() {
             Plans and Pricing
           </h1>
           <p className="text-pretty text-lg text-muted-foreground md:text-xl">
-            Get started immediately for free. Upgrade for more channels, advanced features, and priority support.
+            Get started immediately for free. Upgrade for more channels,
+            advanced features, and priority support.
           </p>
         </div>
 
@@ -82,7 +83,7 @@ export default function PricingPage() {
                 For individuals and small teams getting started.
               </CardDescription>
             </CardHeader>
-            
+
             <CardContent className="flex-1 pb-8">
               <ul className="space-y-4">
                 <li className="flex items-start gap-3">
@@ -127,7 +128,7 @@ export default function PricingPage() {
                 </li>
               </ul>
             </CardContent>
-            
+
             <CardFooter className="pt-0">
               <Button
                 onClick={() => handlePlanClick('free')}
@@ -148,7 +149,7 @@ export default function PricingPage() {
                 Most Popular
               </Badge>
             </div>
-            
+
             <CardHeader className="pb-8">
               <div className="mb-2">
                 <CardTitle className="font-display text-2xl font-bold">
@@ -167,7 +168,7 @@ export default function PricingPage() {
                 For power users and teams that need unlimited channels.
               </CardDescription>
             </CardHeader>
-            
+
             <CardContent className="flex-1 pb-8">
               <ul className="space-y-4">
                 <li className="flex items-start gap-3">
@@ -220,7 +221,7 @@ export default function PricingPage() {
                 </li>
               </ul>
             </CardContent>
-            
+
             <CardFooter className="pt-0">
               <Button
                 onClick={() => handlePlanClick('premium')}
@@ -237,7 +238,8 @@ export default function PricingPage() {
         {/* FAQ or Additional Info Section */}
         <div className="mx-auto mt-16 max-w-3xl text-center">
           <p className="text-sm text-muted-foreground">
-            All plans include secure authentication, real-time synchronization, and unlimited messages. No credit card required for Free plan.
+            All plans include secure authentication, real-time synchronization,
+            and unlimited messages. No credit card required for Free plan.
           </p>
         </div>
       </div>
