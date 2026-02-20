@@ -1,15 +1,10 @@
-### Bugfixes Log
+# Bug Fixes Log
 
-#### 2026-02-20: Fix `PGRST200` error on channel messages load
+This document tracks all bug fixes applied to the project. Each entry includes the date, issue description, root cause, applied solution, and verification steps.
 
-- **Issue**: Accessing the channel details page resulted in a 400 response with error code `PGRST200` when loading messages.
-- **Cause**: The `messages` table in the Supabase schema lacked a direct foreign key relationship to the `profiles` table. The `user_id` column referenced `auth.users(id)` instead of `public.profiles(id)`. This prevented PostgREST from automatically detecting the relationship required for the query `.select('*, profiles(username)')`.
-- **Solution**:
-  - Created a new migration script `scripts/004_fix_messages_profiles_relationship.sql` to drop the existing foreign key constraint and add a new one referencing `public.profiles(id)`.
-  - Updated the base schema in `scripts/001_create_schema.sql` to ensure future setups use the correct relationship by default.
-- **Verification**: Verified that the app code is still functional by running the full Jest test suite (21/21 suites, 136/136 tests passed).
+---
 
-#### [2025-02-20] Messages Not Displaying on Channel Details Pages
+## [2025-02-20] Messages Not Displaying on Channel Details Pages
 
 **Issue Description:**
 Messages were not displaying on channel details pages. When accessing the messages API endpoint, it returned a 400 error with the message:
@@ -39,3 +34,5 @@ Created and executed migration script `003_add_messages_profiles_fk.sql` to:
 2. Verify that messages display correctly with user profile information
 3. Check that the API endpoint `/api/channels/[id]/messages` returns messages with joined profile data
 4. Confirm no PGRST200 errors appear in the console or API responses
+
+---

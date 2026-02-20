@@ -1,9 +1,11 @@
 {
-  "name": "my-project",
+  "name": "treehouse-monorepo",
   "version": "0.9.0",
   "private": true,
+  "packageManager": "pnpm@9.15.4",
   "scripts": {
     "dev": "next dev --turbo",
+    "dev:mobile": "pnpm --filter mobile dev",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
