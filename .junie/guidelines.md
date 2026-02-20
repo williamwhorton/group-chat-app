@@ -49,6 +49,10 @@
 
 ### Git & Workflow
 
+- **Bug Documentation**:
+  - All bug fixes must be summarized in `BUGFIXES.md` at the project root.
+  - Each entry should include: date, issue description, root cause, applied solution, and verification steps.
+  - Whenever a bug is detected, consult `BUGFIXES.md` to check if it is a regression or if there was a related issue in the past.
 - **Pre-commit Hooks**:
   - Husky is configured to run formatting (Prettier), linting (ESLint), and unit tests (with coverage check) before every commit.
   - Commits will fail if formatting is incorrect, linting errors exist, or test coverage falls below 80%.
