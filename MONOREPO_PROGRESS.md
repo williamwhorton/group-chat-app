@@ -2,33 +2,44 @@
 
 **Project:** Treehouse Group Chat - Mobile App Integration  
 **Started:** February 20, 2026  
-**Status:** Phase 1-3 Complete ✅
+**Status:** Phase 1-3 Complete ✅  
+**Last Updated:** February 20, 2026
+
+---
+
+## ⚠️ Architecture Update (February 20, 2026)
+
+**Simplified Approach:** After initial deployment testing, simplified the monorepo structure to keep the web app at root for uninterrupted deployment:
+
+- Web app remains at project root (standard Next.js structure)
+- Mobile app in `apps/mobile/` as separate workspace
+- Shared packages in `packages/*` available to both
+- Root `package.json` runs web app directly (no Turborepo for web)
+- `pnpm-workspace.yaml` manages mobile app and shared packages only
+
+**Why:** Vercel deployment expects Next.js files at root. Keeping web app at root ensures zero disruption to existing deployment pipeline while still enabling mobile development.
 
 ---
 
 ## Implementation Timeline
 
-### ✅ Phase 1: Monorepo Setup (Completed)
+### ✅ Phase 1: Monorepo Setup (Completed & Refined)
 
 **Date:** February 20, 2026
 
 **Accomplishments:**
 - Created `pnpm-workspace.yaml` for workspace configuration
-- Created `turbo.json` for Turborepo build orchestration with caching
-- Updated root `package.json` with monorepo scripts:
-  - `pnpm dev` - Run all apps
-  - `pnpm dev:web` - Web app only
-  - `pnpm dev:mobile` - Mobile app only
-  - `pnpm build` - Build all apps
-- Added Turborepo `^2.3.3` to devDependencies
-- Configured workspace paths: `apps/*` and `packages/*`
+- Added `packageManager: "pnpm@9.15.4"` to root package.json for proper workspace resolution
+- Configured workspace paths: `apps/mobile` and `packages/*` only
+- Web app remains at root with original scripts restored
 
 **Files Modified:**
-- `/package.json` - Converted to monorepo root package
-- `/pnpm-workspace.yaml` - New file
-- `/turbo.json` - New file
+- `/package.json` - Added packageManager field, restored original scripts
+- `/pnpm-workspace.yaml` - Configured for mobile + packages only
+- Removed `/turbo.json` - Not needed for simplified structure
+- Removed `/apps/web/` placeholder - Web app stays at root
 
-**Result:** Monorepo foundation established with Turborepo + pnpm workspaces
+**Result:** Hybrid monorepo structure that preserves web app deployment while enabling mobile development
 
 ---
 

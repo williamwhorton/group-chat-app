@@ -3,28 +3,21 @@
   "version": "0.9.0",
   "private": true,
   "packageManager": "pnpm@9.15.4",
-  "workspaces": [
-    "apps/*",
-    "packages/*"
-  ],
   "scripts": {
-    "dev": "turbo run dev",
-    "dev:web": "turbo run dev --filter=web",
-    "dev:mobile": "turbo run dev --filter=mobile",
-    "build": "turbo run build",
-    "build:web": "turbo run build --filter=web",
-    "start": "turbo run start",
-    "lint": "turbo run lint",
-    "lint:fix": "turbo run lint:fix",
-    "format": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md}\"",
-    "format:fix": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
-    "test": "turbo run test",
-    "test:watch": "turbo run test:watch",
-    "test:coverage": "turbo run test:coverage",
-    "test:e2e": "turbo run test:e2e",
-    "test:e2e:run": "turbo run test:e2e:run",
-    "prepare": "husky install",
-    "clean": "turbo run clean && rm -rf node_modules"
+    "dev": "next dev --turbo",
+    "dev:mobile": "pnpm --filter mobile dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint",
+    "lint:fix": "eslint --fix",
+    "format": "prettier --check .",
+    "format:fix": "prettier --write .",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "test:e2e": "cypress open",
+    "test:e2e:run": "cypress run",
+    "prepare": "husky install"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",
@@ -97,7 +90,6 @@
     "prettier": "^3.2.4",
     "prettier-plugin-tailwindcss": "^0.5.11",
     "tailwindcss": "^3.4.17",
-    "turbo": "^2.3.3",
     "typescript": "5.7.3"
   },
   "pnpm": {
