@@ -28,7 +28,7 @@ create table if not exists public.channel_members (
 create table if not exists public.messages (
   id uuid primary key default gen_random_uuid(),
   channel_id uuid not null references public.channels(id) on delete cascade,
-  user_id uuid not null references auth.users(id) on delete cascade,
+  user_id uuid not null references public.profiles(id) on delete cascade,
   content text not null,
   created_at timestamp with time zone default now(),
   updated_at timestamp with time zone default now()
