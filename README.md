@@ -1,6 +1,13 @@
 # Treehouse Group Chat
 
-A real-time group chat application built with Next.js, React, Supabase, and Tailwind CSS.
+A real-time group chat application with web and mobile support, built as a monorepo.
+
+## Overview
+
+This is a **Turborepo monorepo** containing:
+- **Web App**: Next.js 16 application with real-time messaging
+- **Mobile App**: React Native (Expo) mobile application (scaffolded)
+- **Shared Packages**: Common code shared between platforms
 
 ## Features
 
@@ -11,17 +18,41 @@ A real-time group chat application built with Next.js, React, Supabase, and Tail
 - **Account Management**: Delete your account and owned channels
 - **Mobile & Desktop**: Fully responsive design
 
+## Monorepo Structure
+
+```
+treehouse-monorepo/
+├── apps/
+│   ├── web/          # Next.js web application
+│   └── mobile/       # React Native (Expo) mobile app
+├── packages/
+│   ├── shared-types/      # Shared TypeScript types
+│   ├── shared-supabase/   # Supabase client & helpers
+│   ├── shared-utils/      # Validation, formatting, constants
+│   └── shared-config/     # ESLint, TypeScript configs
+└── [root files continue to contain web app temporarily]
+```
+
 ## Tech Stack
 
-- **Frontend**: Next.js 16, React, TypeScript
+### Web App
+- **Frontend**: Next.js 16, React 19, TypeScript
+- **Styling**: Tailwind CSS, shadcn/ui
+- **Testing**: Jest, Testing Library, Cypress
+
+### Mobile App
+- **Framework**: React Native with Expo SDK 52
+- **Navigation**: Expo Router (file-based routing)
+- **Storage**: Expo Secure Store
+
+### Shared
 - **Database**: Supabase PostgreSQL
 - **Real-time**: Supabase Realtime
 - **Authentication**: Supabase Auth
-- **Styling**: Tailwind CSS, shadcn/ui
-- **Testing**: Jest, Testing Library, Cypress
+- **Monorepo**: Turborepo + pnpm workspaces
 - **Code Quality**: ESLint, Prettier
 - **CI/CD**: GitHub Actions, Husky
-- **Deployment**: Vercel
+- **Deployment**: Vercel (web), EAS Build (mobile)
 
 ## Testing & Code Quality
 
@@ -52,6 +83,28 @@ pnpm lint
 
 # Format code
 pnpm format:fix
+```
+
+### Monorepo Commands
+
+```bash
+# Run both web and mobile dev servers
+pnpm dev
+
+# Run web app only
+pnpm dev:web
+
+# Run mobile app only
+pnpm dev:mobile
+
+# Build all apps
+pnpm build
+
+# Build web app only
+pnpm build:web
+
+# Run tests across all packages
+pnpm test
 ```
 
 ## Getting Started
@@ -90,6 +143,26 @@ pnpm format:fix
    ```
 
 6. Open [http://localhost:3000](http://localhost:3000)
+
+### Mobile Development
+
+The mobile app is scaffolded but not fully implemented. To run it:
+
+```bash
+# Start mobile development server
+pnpm dev:mobile
+
+# Or from apps/mobile directory
+cd apps/mobile
+pnpm dev
+```
+
+Then press:
+- `i` for iOS Simulator (Mac only)
+- `a` for Android Emulator
+- Scan QR code with Expo Go app on your phone
+
+See [apps/mobile/README.md](./apps/mobile/README.md) for detailed mobile app documentation and [MOBILE_PLAN.md](./MOBILE_PLAN.md) for the complete mobile integration strategy.
 
 ## Deployment
 
@@ -150,43 +223,45 @@ All tables have Row Level Security enabled to protect user data.
 ## Project Structure
 
 ```
-app/
-├── page.tsx                  # Home page
-├── auth/                     # Authentication pages
-│   ├── login/page.tsx
-│   ├── sign-up/page.tsx
-│   ├── callback/route.ts
-│   └── error/page.tsx
-├── channels/                 # Channel pages
-│   ├── page.tsx             # List channels
-│   └── [id]/page.tsx        # Chat room
-├── settings/                 # Account settings
-│   └── page.tsx
-└── api/                      # API routes
-    ├── account/delete/route.ts
-    ├── channels/route.ts
-    ├── channels/[id]/invitations/route.ts
-    └── invitations/[token]/
-        ├── route.ts
-        ├── accept/route.ts
-        └── revoke/route.ts
-
-components/
-├── navigation.tsx
-├── create-channel-modal.tsx
-├── invite-user-modal.tsx
-├── delete-channel-modal.tsx
-├── delete-account-modal.tsx
-└── ui/                       # shadcn/ui components
-
-lib/
-└── supabase/
-    ├── client.ts
-    ├── server.ts
-    └── proxy.ts
-
-scripts/
-└── 001_create_schema.sql     # Database schema
+treehouse-monorepo/
+├── apps/
+│   ├── web/                  # Next.js web app (placeholder)
+│   │   ├── package.json
+│   │   └── README.md
+│   └── mobile/               # React Native mobile app
+│       ├── app/              # Expo Router screens
+│       ├── assets/
+│       ├── package.json
+│       └── README.md
+│
+├── packages/
+│   ├── shared-types/         # TypeScript types
+│   │   └── src/
+│   │       └── index.ts
+│   ├── shared-supabase/      # Supabase client & helpers
+│   │   └── src/
+│   │       ├── client.ts
+│   │       └── auth.ts
+│   ├── shared-utils/         # Validation & utilities
+│   │   └── src/
+│   │       ├── validation.ts
+│   │       ├── formatting.ts
+│   │       └── constants.ts
+│   └── shared-config/        # Shared configs
+│       ├── tsconfig.base.json
+│       └── eslint-config.js
+│
+├── [Web app files in root temporarily]
+│   ├── app/                  # Next.js app directory
+│   ├── components/           # React components
+│   ├── lib/                  # Utilities
+│   └── scripts/              # Database migrations
+│
+├── package.json              # Root package.json (monorepo)
+├── pnpm-workspace.yaml       # pnpm workspace config
+├── turbo.json               # Turborepo config
+├── MOBILE_PLAN.md           # Mobile integration plan
+└── README.md                # This file
 ```
 
 ## Environment Variables

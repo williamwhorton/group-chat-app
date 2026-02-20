@@ -1,0 +1,23 @@
+{
+  "extends": "@treehouse/shared-config/tsconfig.base.json",
+  "compilerOptions": {
+    "lib": ["ES2020", "DOM"],
+    "jsx": "react-native",
+    "strict": true,
+    "paths": {
+      "@/*": ["./*"],
+      "@treehouse/shared-types": ["../../packages/shared-types/src"],
+      "@treehouse/shared-supabase": ["../../packages/shared-supabase/src"],
+      "@treehouse/shared-utils": ["../../packages/shared-utils/src"]
+    }
+  },
+  "include": [
+    "**/*.ts",
+    "**/*.tsx",
+    ".expo/types/**/*.ts",
+    "expo-env.d.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}
