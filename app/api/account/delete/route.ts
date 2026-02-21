@@ -3,7 +3,8 @@ import { cookies } from 'next/headers'
 import { NextResponse } from 'next/server'
 
 export async function POST() {
-  const supabase = createClient(cookies())
+  const cookieStore = await cookies()
+  const supabase = createClient(cookieStore)
 
   try {
     const {
@@ -13,25 +14,17 @@ export async function POST() {
       return NextResponse.json({ error: 'Not authenticated' }, { status: 401 })
     }
 
-    // Get all channels created by this user
-    const { data: channels, error: channelsError } = await supabase
-      .from('channels')
-      .select('id')
-      .eq('creator_id', user.id)
+    // 1. Delete all messages sent by this user (must happen first while
+    //    the user is still a channel_member, since the messages DELETE
+    //    RLS policy checks channel membership)
+    const { error: messagesError } = await supabase
+      .from('messages')
+      .delete()
+      .eq('user_id', user.id)
 
-    if (channelsError) throw channelsError
+    if (messagesError) throw messagesError
 
-    // Delete all channels (messages will cascade delete)
-    if (channels && channels.length > 0) {
-      const { error: deleteError } = await supabase
-        .from('channels')
-        .delete()
-        .eq('creator_id', user.id)
-
-      if (deleteError) throw deleteError
-    }
-
-    // Remove user from all channels
+    // 2. Remove user from all channels
     const { error: leaveError } = await supabase
       .from('channel_members')
       .delete()
@@ -39,17 +32,22 @@ export async function POST() {
 
     if (leaveError) throw leaveError
 
-    // Delete user profile
+    // 3. Delete all channels created by this user (remaining messages
+    //    from other users cascade-delete with the channel)
+    const { error: channelsError } = await supabase
+      .from('channels')
+      .delete()
+      .eq('creator_id', user.id)
+
+    if (channelsError) throw channelsError
+
+    // 4. Delete user profile
     const { error: profileError } = await supabase
       .from('profiles')
       .delete()
       .eq('id', user.id)
 
     if (profileError) throw profileError
-
-    // Delete auth user (this requires admin access via service role)
-    // For now, we'll just let the cascade delete from auth.users handle it
-    // In production, you'd use supabase-admin or a backend function
 
     return NextResponse.json({ success: true })
   } catch (error) {
